@@ -1,5 +1,6 @@
 package com.epam.rd.izh.service;
 
+import com.epam.rd.izh.dto.AuthorizedUserDto;
 import com.epam.rd.izh.entity.AuthorizedUser;
 import com.epam.rd.izh.repository.UserRepository;
 import java.util.HashSet;
@@ -22,8 +23,7 @@ import org.springframework.stereotype.Service;
 public class UserDetailsServiceMapper implements UserDetailsService {
 
   @Autowired
-  UserRepository userRepository;
-
+  UserService userService;
   /**
    * Данный метод должен вернуть объект User, являющийся пользователем текущей сессии.
    * Реализация данного метода включает маппинг, т.е. преобразование бизнес-объекта AuthorizedUser в

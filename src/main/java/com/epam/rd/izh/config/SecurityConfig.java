@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -35,7 +36,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .antMatchers("/login").anonymous()
         .antMatchers("/registration").permitAll()
         .antMatchers("/registration/**").permitAll()
-
+        //.antMatchers("/mainTeacher/**").hasAnyRole("TEACHER")
         /**
          * Открытие доступа к ресурсным пакетам:
          * /webapp/css
@@ -66,8 +67,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
          */
         .formLogin()
         .loginPage("/login")
-        .loginProcessingUrl("/login/process")
-        .defaultSuccessUrl("/")
+            .defaultSuccessUrl("/main", true)
+            .permitAll()
         .failureUrl("/login?error")
         .usernameParameter("login")
         .passwordParameter("password")
@@ -76,7 +77,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
          * Включение функции выхода из текущей сессии.
          */
         .and()
-        .logout();
+        .logout()
+        .logoutSuccessUrl("/login");
   }
 
   @Override
@@ -106,4 +108,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
   }
+
 }

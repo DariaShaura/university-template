@@ -6,6 +6,11 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import com.epam.rd.izh.service.AuthorizedUserMapper;
+import com.epam.rd.izh.service.RoleService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -20,7 +25,17 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class UserRepository {
+
   private final List<AuthorizedUser> users = new ArrayList<>();
+
+  @Autowired
+  JdbcTemplate jdbcTemplate;
+
+  @Autowired
+  AuthorizedUserMapper authorizedUserMapper;
+
+  @Autowired
+  RoleService roleService;
 
   /**
    * В данном методе использована библиотека Stream API:
@@ -34,16 +49,30 @@ public class UserRepository {
    */
 
   @Nullable
-  public AuthorizedUser getAuthorizedUserByLogin(@Nonnull String login) {
-    return users.stream()
-        .filter(value -> value.getLogin().equals(login))
-        .findFirst().orElse(null);
+  public AuthorizedUser getUserByLogin(@Nonnull String login) {
+    String query_getAuthorizedUserByLogin = "SELECT user.id, user.login, user.password, user.firstName, user.secondName, user.lastName, " +
+            "user.birthDate, role.role FROM user " +
+            "left join role " +
+            "on user.id_role = role.id " +
+            "where user.login = ?";
+
+    AuthorizedUser authorizedUser = jdbcTemplate.queryForObject(query_getAuthorizedUserByLogin, new Object[]{ login }, authorizedUserMapper);
+
+    return authorizedUser;
   }
 
-  public boolean addAuthorizedUser(@Nullable AuthorizedUser user) {
+  public boolean addUser(@Nullable AuthorizedUser user) {
+
     if (user != null) {
-      users.add(user);
-      return true;
+      int roleId = roleService.getRoleId(user.getRole());
+
+      String query_insertUser = "insert into user (firstName, secondName, lastName, birthDate, id_role, login, password) "+"" +
+              "                 VALUES (?, ?, ?, ?, ?, ?, ?)";
+      return jdbcTemplate.update(
+              query_insertUser,
+              user.getFirstName(), user.getSecondName(), user.getLastName(),
+                    user.getBirthDate(), roleId, user.getLogin(), user.getPassword()
+      ) > 0;
     }
     return false;
   }

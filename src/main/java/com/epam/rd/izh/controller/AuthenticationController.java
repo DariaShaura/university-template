@@ -1,10 +1,17 @@
 package com.epam.rd.izh.controller;
 
 import com.epam.rd.izh.entity.AuthorizedUser;
-import com.epam.rd.izh.repository.UserRepository;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+
+import com.epam.rd.izh.repository.RoleRepository;
+import com.epam.rd.izh.service.RoleService;
+import com.epam.rd.izh.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -13,6 +20,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.ArrayList;
 
 /**
  * В аргументы контроллеров, которые обрабатывают запросы, можно указать дополнительные входные параметры: Например:
@@ -24,10 +33,18 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class AuthenticationController {
 
   @Autowired
-  UserRepository userRepository;
+  @Qualifier("userValidator") // spring validator
+  private Validator userValidator;
+
+  @Autowired
+  private UserService userService;
 
   @Autowired
   private PasswordEncoder passwordEncoder;
+
+  @Autowired
+  private RoleService roleService;
+
 
   /**
    * Метод, отвечающий за логику авторизации пользователя.
@@ -53,6 +70,16 @@ public class AuthenticationController {
      * Spring MVC, используя суффикс и префикс, создаст итоговый путь к JSP: /WEB-INF/pages/login.jsp
      */
     return "login";
+  }
+
+  @GetMapping("/logout")
+  public String logout(HttpServletRequest request, HttpServletResponse response) {
+
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    if (auth != null){
+      new SecurityContextLogoutHandler().logout(request, response, auth);
+    }
+    return "redirect:/login?logout";
   }
 
   /**

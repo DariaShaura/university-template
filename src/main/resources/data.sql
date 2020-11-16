@@ -1,0 +1,13 @@
+INSERT INTO `role` (`role`, `roleTitle`) VALUES ('ADMIN', 'Администратор');
+INSERT INTO `role` (`role`, `roleTitle`) VALUES ('TEACHER', 'Преподаватель');
+INSERT INTO `role` (`role`, `roleTitle`) VALUES ('STUDENT', 'Студент');
+INSERT INTO `user` (`firstName`, `secondName`, `lastName`, `birthDate`, `id_role`, `login`, `password`) VALUES ('Иван', 'Иванович', 'Иванов', '1980-05-03', '2', 'IIIvan', '$2a$10$63aZbjkgRNhC/Gf12KrrgexiYeTpmMj7ogugtD/NGMRzXN4nWpPCK');
+INSERT INTO `user` (`firstName`, `secondName`, `lastName`, `birthDate`, `id_role`, `login`, `password`) VALUES ('Петр', 'Петрович', 'Петров', '1979-06-06', '2', 'PPPetrov', '$2a$10$tiAy3DqmFZyv7sfOCw8f2un7hFJveDRzZ36WRfpLSz3sjzvjXCro2');
+INSERT INTO `user` (`firstName`, `secondName`, `lastName`, `birthDate`, `id_role`, `login`, `password`) VALUES ('admin', 'admin', 'admin', '1990.01.01', '1', 'admin', '$2a$10$tPJGFZnv4Kfp.m3JmtWSZ.cQAlo0PqEANdppHaqHrRQjy638da5iS');
+INSERT INTO `course` (`title`, `description`, `hours`, `id_teacher`) VALUES ('Методы оптимизации', 'Цели данного курса – развить навыки формализации проблемы в виде оптимизационной задачи, освоение методов нахождения наилучших решений, приобрести навыки применения соответствующего программного обеспечения.', '36', '1');
+INSERT INTO `theme` (`title`, `id_course`) VALUES ('Основные понятия в теории экстремальных задач', '1');
+INSERT INTO `theme` (`title`, `id_course`) VALUES ('Конечномерные задачи безусловной оптимизации.', '1');
+INSERT INTO `theme` (`title`, `id_course`) VALUES ('Конечномерные задачи условной оптимизации. Метод множителей Лагранжа.', '1');
+INSERT INTO `material` (`title`, `type`, `path`, `id_theme`) VALUES ('Постановка задачи оптимизации', 'Лекция', 'path1', '1');
+INSERT INTO `material` (`title`, `type`, `path`, `id_theme`) VALUES ('Оптимальность в многомерной задаче без ограничений', 'Лекция', 'path2', '2');
+INSERT INTO `material` (`title`, `type`, `path`, `id_theme`) VALUES ('Использование прикладных программ для решения оптимизационных задач', 'Лабораторная', 'path3', '3');

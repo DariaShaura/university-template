@@ -1,5 +1,7 @@
 package com.epam.rd.izh.entity;
 
+//import sratic javax.persistance.GenerationType.IDENTITY;
+
 /**
  * Сущность пользователя, содержит данные(credentials), необходимые для авторизации в Spring Web приложении; Может
  * быть использована как часть бизнес логики приложеняи, например сотрудник больницы, где role определяет его
@@ -9,7 +11,8 @@ package com.epam.rd.izh.entity;
  * добавить в код приложения сервис, генерирующий UUID: 'private UUID id = randomUUID();' и проверяющий его на
  * наличие совпадений с уже существующими.
  */
-
+//@Entity
+//@Table(name="users")
 public class AuthorizedUser {
 
   private String login;
