@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
 
-    <link rel="stylesheet" href="css/courseAdd.css">
+    <link rel="stylesheet" href="/css/courseAdd.css">
     <link rel="icon" href="images/favicon.ico" type="image/x-icon" />
   <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon" />
   <script src="https://use.fontawesome.com/450e77e423.js"></script>
@@ -58,61 +58,69 @@
   </div>
  <div class="album py-5 bg-light">
     <div class="container">
-        <form id="courseAddForm">
+        <form:form modelAttribute="courseAddForm" method="POST" action="/mainTeacher/courseAdd/proceed" id="courseAddForm" validate="true">
         <div class="form-group">
             <label for="courseTitle">Название курса</label>
-            <input type="text" class="form-control" id="courseTitle" placeholder="Введите название курса" required="">
+            <form:input type="text" path="title" class="form-control" id="courseTitle" placeholder="Введите название курса" required=""/>
         </div>
         <div class="form-group">
             <label for="courseDescription">Описание курса</label>
-             <textarea class="form-control" id="courseDescription" rows="5"></textarea>
+             <form:textarea path="description" class="form-control" id="courseDescription" rows="5"/>
         </div>
         <div class="form-group">
-            <input type="number" class="form-control" id="hours" placeholder="Количество часов" required="">
+            <form:input path="hours" type="number" class="form-control" id="hours" placeholder="Количество часов" required=""/>
         </div>
-        <div class="form-group">
-            <input type="text" class="form-control" id="author" placeholder="Автор" required="">
-        </div>
-        <div class="form-group row mb-5">
+        <div class="form-group row">
     		<div class="col-auto">
-    			<h4>Занятия</h4>
+    			<h4>Темы</h4>
     		</div>
     		<div class="col-auto">
       			<button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#exampleModal">Добавить</button>
     		</div>
   		</div>
+  		<div class="form-group mb-5" id="tableThemes">
+         </div>
         <button type="submit" class="btn btn-primary">Добавить курс</button>
-        </form>
+        </form:form>
     </div>
   </div>
 
-  <!-- Modal -->
-<div class="modal fade" id="addClassInCourseModal"  data-backdrop="static" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<%-- MODAL FORM --%>
+<div class="modal fade" id="exampleModal"  data-backdrop="static" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Занятие</h5>
+        <h5 class="modal-title" id="exampleModalLabel">Тема</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        <!--<form id="classAddForm">
+        <form id="classAddForm">
         	<div class="form-group">
-            	<label for="classTheme">Тема занятия</label>
-            	<input type="text" class="form-control" id="classTheme" placeholder="Введите название темы" required="">
+            	<label for="themeTitle">Название</label>
+            	<input type="text" class="form-control" id="themeTitle" placeholder="Введите название темы" required="">
+        	</div>
+        	<div class="form-group">
+        	     <h6>Материал к теме</h6>
+        	</div>
+        	<div class="form-group">
+        	    <select class="custom-select" id="selectType">
+                                        <option value="Лекция">Лекция</option>
+                                        <option value="Лабораторная">Лабораторная</option>
+                </select>
         	</div>
         	<div class="input-group mb-3">
-  				<div class="input-group-prepend">
-    				<span class="input-group-text" id="inputGroupFileAddon01">Загрузить файлы</span>
-  				</div>
   				<div class="custom-file">
+  				     <%--<input type="file" class="form-control-file" id="exampleFormControlFile1">--%>
     				<input type="file" class="custom-file-input" id="inputGroupFile01" aria-describedby="inputGroupFileAddon01">
     				<label class="custom-file-label" for="inputGroupFile01">Выбрать файл</label>
   				</div>
 			</div>
-
-    	</form>-->
+			<div class="form-group">
+                 <input type="text" class="form-control" id="description" placeholder="Описание материала">
+            </div>
+    	</form>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
@@ -131,8 +139,8 @@
   </div>
 </footer>
     <!-- jQuery and Bootstrap Bundle (includes Popper) -->
-    <script src="js/jquery-3.5.1.js"></script>
-    <script src="bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="js/courseAdd.js"></script>
+    <script src="/js/jquery-3.5.1.js"></script>
+    <script src="/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/courseAdd.js"></script>
 </body>
 </html>

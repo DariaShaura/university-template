@@ -1,8 +1,13 @@
 package com.epam.rd.izh.repository;
 
 import com.epam.rd.izh.entity.AuthorizedUser;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -10,7 +15,9 @@ import javax.annotation.Nullable;
 import com.epam.rd.izh.service.AuthorizedUserMapper;
 import com.epam.rd.izh.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -61,9 +68,16 @@ public class UserRepository {
     return authorizedUser;
   }
 
+  public long getUserIdByLogin(@Nonnull String login) {
+    String query_getAuthorizedUserByLogin = "SELECT user.id from user where user.login = ?";
+
+    return jdbcTemplate.queryForObject(query_getAuthorizedUserByLogin, new Object[]{ login }, Long.class);
+  }
+
   public boolean addUser(@Nullable AuthorizedUser user) {
 
     if (user != null) {
+
       int roleId = roleService.getRoleId(user.getRole());
 
       String query_insertUser = "insert into user (firstName, secondName, lastName, birthDate, id_role, login, password) "+"" +
@@ -75,6 +89,19 @@ public class UserRepository {
       ) > 0;
     }
     return false;
+  }
+
+  public List<Map<String, Object>> getCourses(long id_teacher){
+
+    String query_getTeachersCourses = "SELECT id, title FROM course WHERE course.id_teacher = ?";
+
+    return jdbcTemplate.queryForList(query_getTeachersCourses, id_teacher);
+  }
+
+  public boolean IsUserInDB(String login){
+      String query_isUserInDB = "SELECT count(id) FROM user WHERE login = ?";
+
+      return jdbcTemplate.queryForObject(query_isUserInDB, new Object[]{login}, Integer.class) > 0;
   }
 
 }

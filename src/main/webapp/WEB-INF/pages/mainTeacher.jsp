@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="rus">
 <head>
@@ -34,7 +35,7 @@
             <a class="dropdown-item" href="#">Курс1</a>
             <a class="dropdown-item" href="#">Курс2</a>
             <div class="dropdown-divider"></div>
-            <a class="dropdown-item" href="/courseAdd">Создать курс</a>
+            <a class="dropdown-item" href="mainTeacher/courseAdd">Создать курс</a>
           </div>
         </li>
       </ul>
@@ -53,18 +54,21 @@
   <div class="jumbotron">
     <div class="container">
       <h1 class="display-3">Курсы</h1>
-      <p><a class="btn btn-primary btn-lg" href="/courseAdd" role="button">Добавить курс »</a></p>
+      <p><a class="btn btn-primary btn-lg" href="mainTeacher/courseAdd" role="button">Добавить курс »</a></p>
+      <form id="hiddenForm">
+        <input type="hidden" id="coursesList" name="coursesList" value="${coursesList}"/>
+      </form>
     </div>
   </div>
  <div class="album py-5 bg-light">
-    <div class="container">
+    <div class="container" id="coursesContainer">
 
       <div class="row">
         <div class="col-md-4">
           <div class="card mb-4 shadow-sm">
               <img src="images/image1.jpg">
             <div class="card-body">
-              <a class="stretched-link" href="course" id="course1">Курс1</a>
+              <a class="stretched-link" href="mainTeacher/course" id="course1">Курс1</a>
             </div>
           </div>
         </div>
@@ -72,7 +76,7 @@
           <div class="card mb-4 shadow-sm">
             <img src="images/image2.jpg">
             <div class="card-body">
-              <a class="stretched-link" href="course" id="course2">Курс2</a>
+              <a class="stretched-link" href="mainTeacher/course" id="course2">Курс2</a>
             </div>
           </div>
         </div>
@@ -80,12 +84,23 @@
           <div class="card mb-4 shadow-sm">
             <img src="images/image3.jpg">
             <div class="card-body">
-              <a class="stretched-link" href="course" id="course3">Курс3</a>
+              <a class="stretched-link" href="mainTeacher/course" id="course3">Курс3</a>
             </div>
           </div>
         </div>
       </div>
     </div>
+  </div>
+  <div id="hiddenCourse">
+    <div class="row">
+            <div class="col-md-4">
+              <div class="card mb-4 shadow-sm">
+                  <img class="courseImage" src="">
+                <div class="card-body">
+                  <a class="stretched-link courseHref" href="/mainTeacher/course" id=""></a>
+                </div>
+              </div>
+            </div>
   </div>
   <footer class="text-muted">
   <div class="container">

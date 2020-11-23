@@ -16,7 +16,7 @@
                 <a class="flex-sm-fill text-sm-center nav-link" href="login">Вход</a>
                 <a class="flex-sm-fill text-sm-center nav-link active" href="">Регистрация</a>
               </nav>
-          <form:input type="text" path="login" class="form-control" placeholder="Логин" required="" autofocus="" minlength="5"/>
+          <form:input type="text" path="login" id="login" class="form-control" placeholder="Логин" required="" autofocus="" minlength="5"/>
           <form:input type="password" path="password" class="form-control" placeholder="Пароль" required=""/>
           <form:input type="text" path="firstName" class="form-control" placeholder="Имя" required=""/>
           <form:input type="text" path="secondName" class="form-control" placeholder="Отчество" required=""/>
@@ -28,6 +28,6 @@
     <!-- jQuery and Bootstrap Bundle (includes Popper) -->
     <script src="js/jquery-3.5.1.js"></script>
     <script src="bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="js/login.js"></script>
+    <script src="js/registration.js"></script>
 </body>
 </html>

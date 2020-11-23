@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
-@NoArgsConstructor
 public class RoleRepository {
 
     @Autowired

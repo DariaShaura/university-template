@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import com.epam.rd.izh.exception.UserAlreadyRegisteredException;
 import com.epam.rd.izh.repository.RoleRepository;
 import com.epam.rd.izh.service.RoleService;
 import com.epam.rd.izh.service.UserService;
@@ -22,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * В аргументы контроллеров, которые обрабатывают запросы, можно указать дополнительные входные параметры: Например:
@@ -92,6 +95,16 @@ public class AuthenticationController {
     }
     return "registration";
   }
+
+  @GetMapping(value ="registration/availability", produces = MediaType.APPLICATION_JSON_VALUE)
+  public @ResponseBody Map<String, Boolean> loginAvailability(@RequestParam String name) {
+
+    Map<String, Boolean> map = new HashMap<>();
+    map.put("status", userService.IsLoginCorrect(name));
+
+    return map;
+  }
+
 
   /**
    * Метод, отвечающий за подтверждение регистрации пользователя и сохранение данных в репозиторий или DAO.

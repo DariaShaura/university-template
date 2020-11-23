@@ -16,3 +16,7 @@ i{
 a {
 	color: #343a40;
 }
+
+#hiddenCourse{
+    display: none;
+}

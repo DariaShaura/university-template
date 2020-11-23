@@ -1,28 +1,33 @@
 ﻿$(document).ready(function(){
-	/*$('#course1').click(function(e){
-    e.preventDefault();
-    var href = this.href;
 
-    //code
+    'use strict';
 
-    location.href = "course.html";
-	});
+    var coursesList = $("#coursesList").val();
 
-	$('#course2').click(function(e){
-    e.preventDefault();
-    var href = this.href;
+    console.log(coursesList[1]);
 
-    //code
+    window.addEventListener('load', function() {
+        doAjaxPost();
+      }, false);
 
-    location.href = "course.html";
-	});
+	//$.each(coursesList,function(key, data){
 
-	$('#course3').click(function(e){
-    e.preventDefault();
-    var href = this.href;
+    //   $each(data, function(index, value){
 
-    //code
+                    //$.each(value, function(i, v){
+                    //    console.log('Индекс: ' + v['id'] + '; Значение: ' + v['title']);
+                    //});
+       //});
 
-    location.href = "course.html";
-	});*/
+    //});
 });
+
+function doAjaxPost() {
+    $.ajax({
+        type: "POST",
+        url: "/mainTeacher",
+        dataType: "json"}).
+        done( function(response){
+            console.log(response.length);
+         });
+    }

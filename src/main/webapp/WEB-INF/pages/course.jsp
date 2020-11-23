@@ -7,7 +7,7 @@
 	<meta name="author" content="Daria Shaura">
 	<title>Курc:</title>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
-	<link rel="stylesheet" href="css/course.css">
+	<link rel="stylesheet" href="/css/course.css">
   <link rel="icon" href="images/favicon.ico" type="image/x-icon" />
   <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon" />
   <script src="https://use.fontawesome.com/450e77e423.js"></script>
@@ -212,8 +212,8 @@
   </div>
 </footer>
     <!-- jQuery and Bootstrap Bundle (includes Popper) -->
-    <script src="js/jquery-3.5.1.js"></script>
-    <script src="bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="js/course.js"></script>
+    <script src="/js/jquery-3.5.1.js"></script>
+    <script src="/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/course.js"></script>
 </body>
 </html>
