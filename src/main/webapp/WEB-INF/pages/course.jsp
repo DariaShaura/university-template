@@ -107,33 +107,24 @@
   </div>
 
   <div id="courseDescriptionSection">
-     <h3 class="pb-1 text-center">Курс1</h3>
-           <a href="#" data-toggle="tooltip" title="Some tooltip text!">Hover over me</a>
+     <h3 class="pb-1 text-center" id="courseTitle"></h3>
+           <%--<a href="#" data-toggle="tooltip" title="Some tooltip text!">Hover over me</a>--%>
            <div>
               <h4 class="courseParts">Описание курса</h4>
-              <p>
-                Курс «<span class="courseTitle">Курс1</span>» нацелен на Формирование представления о специфике базовых и прикладных технологий, их месте среди других наук, роли в развитии информационного общества, изучение практических аспектов разработки средств реализации информационных технологий
+              <p id="courseDescription">
               </p>
-              <p>
-                Курс соответствует Учебному плану «Информационные системы и технологии» (очное, 2017)
+              <p id="hours">
+                <span class="hours">Количество часов</span>:
               </p>
-              <p>
-                <span class="hours">Количество часов</span>: 108 ч. (в том числе лекции – 14, практические занятия – 30, самостоятельная работа – 64), форма контроля: дифференцированный зачет.
-              </p>
-              <p><span class="author">Автор ЭУК</span>: Иванов Иван Иванович, доцент кафедры «Информационные системы», кандидат технических наук</p>
               <hr>
-              <h4 class="courseParts">Занятие1</h4>
-              <p class="mb-4">
-              <span class="classHours">Количество часов</span>:<span class="classHours">7 ч.</span> (в том числе лекции – 2, лабораторные работы – 2)
-              </p>
-              <ol class="list-unstyled" id="course-themes">
-                <li class="mb-3"><a class="lectureTitle" href="#" data-toggle="tooltip" title="Some tooltip text!"><i class="fa fa-book fa-lg" aria-hidden="true"></i> Лекция 1</a></li>
-                <li class="mb-3"><a class="lectureTitle" href="#"><i class="fa fa-book fa-lg" aria-hidden="true"></i> Лекция 2</a></li>
-                <li class="mb-3"><a class="lectureTitle" href="#"><i class="fa fa-file-pdf-o fa-lg" aria-hidden="true"></i> Презентация</a></li>
-                <li class="mb-3"><a class="lectureTitle" href="#"><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i> Лабораторная работа 1</a></li>
-                <li class="mb-3"><a class="lectureTitle" href="#"><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i> Лабораторная работа 2</a></li>
+              <div id="themesContainer">
+              <div id="theme">
+              <h5 class="themeTitle"></h5>
+              <ol class="list-unstyled themeMaterials">
               </ol>
               <hr>
+              </div>
+              </div>
            </div>
   </div>
 

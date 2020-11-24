@@ -4,6 +4,9 @@ import com.epam.rd.izh.entity.AuthorizedUser;
 import com.epam.rd.izh.entity.Course;
 import com.epam.rd.izh.entity.Material;
 import com.epam.rd.izh.entity.Theme;
+import com.epam.rd.izh.service.CourseMapper;
+import com.epam.rd.izh.service.MaterialMapper;
+import com.epam.rd.izh.service.ThemeMapper;
 import com.epam.rd.izh.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -16,6 +19,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.util.List;
 
 @Component
 public class CourseRepository {
@@ -24,6 +28,15 @@ public class CourseRepository {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    CourseMapper courseMapper;
+
+    @Autowired
+    ThemeMapper themeMapper;
+
+    @Autowired
+    MaterialMapper materialMapper;
 
     public boolean addCourse(@Nullable Course course) {
 
@@ -96,5 +109,27 @@ public class CourseRepository {
             ) > 0;
         }
         return false;
+    }
+
+    public Course getCourseById(long id){
+        String query_getCourseByLogin = "SELECT * FROM course WHERE course.id = ?";
+
+        Course course = jdbcTemplate.queryForObject(query_getCourseByLogin, new Object[]{ id }, courseMapper);
+
+        return course;
+    }
+
+    public List<Theme> getThemeList(long idCourse){
+        String query_getThemesByIdCourse = "SELECT * FROM theme WHERE theme.id_course = ?";
+
+        List<Theme> themes = jdbcTemplate.query(query_getThemesByIdCourse, new Object[]{ idCourse }, themeMapper);
+
+        return themes;
+    }
+
+    public List<Material> getMaterialsList(long idTheme){
+        String query_getMaterialsByIdTheme = "SELECT * FROM material WHERE material.id_theme = ?";
+
+        return jdbcTemplate.query(query_getMaterialsByIdTheme, new Object[]{ idTheme }, materialMapper);
     }
 }

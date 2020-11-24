@@ -28,7 +28,7 @@ a {
 	color: #007bff;
 }
 
-#tableStudentsSection, #courseDescriptionSection, #gradeStudentsSection{
+#tableStudentsSection, #courseDescriptionSection, #gradeStudentsSection, #theme{
 	display: none;
 }
 

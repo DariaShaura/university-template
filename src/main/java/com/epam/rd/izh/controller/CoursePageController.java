@@ -2,30 +2,46 @@ package com.epam.rd.izh.controller;
 
 import com.epam.rd.izh.dto.AuthorizedUserDto;
 import com.epam.rd.izh.dto.CourseDto;
+import com.epam.rd.izh.dto.MaterialDto;
 import com.epam.rd.izh.dto.ThemeDto;
 import com.epam.rd.izh.entity.Course;
 import com.epam.rd.izh.entity.Material;
 import com.epam.rd.izh.entity.Theme;
 import com.epam.rd.izh.service.CourseService;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 public class CoursePageController {
 
     @Autowired
     CourseService courseService;
+
+    @Getter
+    private class GettingIdCourse {
+
+        String idCourse;
+
+        public void setIdCourse(String idCourse) {
+            this.idCourse = idCourse;
+        }
+    }
 
     @GetMapping("/mainTeacher/courseAdd")
     public String addCourse(Authentication authentication, Model model) {
@@ -92,5 +108,32 @@ public class CoursePageController {
         model.addAttribute("login", authentication.getName());
 
         return "course";
+    }
+
+    @PostMapping(value = "/mainTeacher/course", produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody
+    ResponseEntity<?> getCourseInfo(Authentication authentication, HttpServletRequest request) {
+
+        String login = authentication.getName();
+
+        long idCourse = Long.parseLong(request.getParameter("idCourse"));
+
+        // получить сущность Курс, Темы, Материалы
+        Course course = courseService.getCourse(idCourse);
+        List<Theme> themes = courseService.getCourseThemes(idCourse);
+        List<ThemeDto> themeDtoList = new ArrayList<>();
+        for(Theme theme: themes){
+            long idTheme = theme.getId();
+            // получить список материалов
+            List<Material> materials = courseService.getThemeMaterials(idTheme);
+            List<MaterialDto> materialDtoList = courseService.getMaterialsDto(materials);
+
+            themeDtoList.add(courseService.getThemeDto(theme, materialDtoList));
+        }
+        // создать класс CourseDTO из сущностей Курс, Темы, Материалы
+        CourseDto courseDto = courseService.getCourseDto(login, course, themeDtoList);
+
+        // отправить класс CourseDTO в ответе на Post-запрос
+        return ResponseEntity.ok(courseDto);
     }
 }

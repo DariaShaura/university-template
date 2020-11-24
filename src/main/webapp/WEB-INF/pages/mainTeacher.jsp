@@ -55,15 +55,12 @@
     <div class="container">
       <h1 class="display-3">Курсы</h1>
       <p><a class="btn btn-primary btn-lg" href="mainTeacher/courseAdd" role="button">Добавить курс »</a></p>
-      <form id="hiddenForm">
-        <input type="hidden" id="coursesList" name="coursesList" value="${coursesList}"/>
-      </form>
     </div>
   </div>
  <div class="album py-5 bg-light">
-    <div class="container" id="coursesContainer">
-
-      <div class="row">
+    <div class="container">
+      <div class="row" id="coursesContainer">
+      <%--
         <div class="col-md-4">
           <div class="card mb-4 shadow-sm">
               <img src="images/image1.jpg">
@@ -87,17 +84,16 @@
               <a class="stretched-link" href="mainTeacher/course" id="course3">Курс3</a>
             </div>
           </div>
-        </div>
+        </div>--%>
       </div>
     </div>
   </div>
   <div id="hiddenCourse">
-    <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-4 courseLink">
               <div class="card mb-4 shadow-sm">
                   <img class="courseImage" src="">
                 <div class="card-body">
-                  <a class="stretched-link courseHref" href="/mainTeacher/course" id=""></a>
+                  <a class="stretched-link courseHref" href="#" id=""></a>
                 </div>
               </div>
             </div>

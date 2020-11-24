@@ -74,6 +74,12 @@ public class UserRepository {
     return jdbcTemplate.queryForObject(query_getAuthorizedUserByLogin, new Object[]{ login }, Long.class);
   }
 
+  public String getLoginById(long id) {
+    String query_getLoginById = "SELECT user.login from user where user.id = ?";
+
+    return jdbcTemplate.queryForObject(query_getLoginById, new Object[]{ id }, String.class);
+  }
+
   public boolean addUser(@Nullable AuthorizedUser user) {
 
     if (user != null) {
