@@ -8,7 +8,7 @@ import com.epam.rd.izh.entity.Course;
 import com.epam.rd.izh.entity.Material;
 import com.epam.rd.izh.entity.Theme;
 import com.epam.rd.izh.service.CourseService;
-import lombok.Getter;
+import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -29,6 +30,17 @@ import java.util.stream.Collectors;
 
 @Controller
 public class CoursePageController {
+
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Setter
+    @Getter
+    private class CourseTemp{
+        private String title;
+        private String description;
+        private int hours;
+        private String teacherLogin;
+    }
 
     @Autowired
     CourseService courseService;
@@ -48,16 +60,12 @@ public class CoursePageController {
 
         model.addAttribute("login", authentication.getName());
 
-        if(!model.containsAttribute("courseAddForm")){
-            model.addAttribute("courseAddForm", new CourseDto());
-        }
-
         return "courseAdd";
     }
 
-    @PostMapping("/mainTeacher/courseAdd/proceed")
-    public String addCourseProceed(@Valid @ModelAttribute("courseAddForm") CourseDto courseDto,
-                                   BindingResult bindingResult, HttpServletRequest request, RedirectAttributes redirectAttributes) {
+    @PostMapping(value = "/mainTeacher/courseAdd/proceed", produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody
+    ResponseEntity<?> addCourseProceed(@Valid @RequestBody CourseDto courseDto, Errors errors) {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String login = auth.getName();
@@ -68,38 +76,14 @@ public class CoursePageController {
 
         courseService.addCourse(course);
 
-        String[] themeTitles = request.getParameterValues("themeTitle");
+        courseDto.getThemes().stream()
+                .forEach(themeDto -> {Theme theme = courseService.getTheme(course.getId(), themeDto);
+                                        courseService.addTheme(theme);
+                                        themeDto.getMaterials().stream().forEach(materialDto ->
+                                                { Material material = courseService.getMaterial(theme.getId(), materialDto);
+                                                  courseService.addMaterial(material); });});
 
-        int i =0;
-        for(String themeTitle: themeTitles){
-            i++;
-            Theme theme = new Theme().builder()
-                                .title(themeTitle)
-                                .id_Course(course.getId())
-                                .build();
-            // add theme in DB
-            courseService.addThemeInCourse(theme);
-
-            String[] descriptions = request.getParameterValues("description" + i);
-            String[] materialTypes = request.getParameterValues("materialType" + i);
-            String[] filePath = request.getParameterValues("filePath" + i);
-            for(int j=0; j< descriptions.length; j++){
-                Material material = new Material().builder()
-                                                .title(descriptions[j])
-                                                .type(materialTypes[j])
-                                                .path(filePath[j])
-                                                .id_Theme(theme.getId())
-                                                .build();
-                // add material in DB
-                courseService.addMaterialInTheme(material);
-            }
-        }
-
-        //TODO
-        //redirect to mainTeacher/course, course = page with new course
-        redirectAttributes.addFlashAttribute("idCourse", course.getId());
-
-        return "redirect:/mainTeacher/course";
+        return ResponseEntity.ok(course.getId());
     }
 
     @GetMapping("/mainTeacher/course")

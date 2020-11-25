@@ -1,5 +1,4 @@
 ﻿<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="author" content="Daria Shaura">
     <title>Создание курса</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous"/>
 
-    <link rel="stylesheet" href="/css/courseAdd.css">
+    <link rel="stylesheet" href="/css/courseAdd.css"/>
     <link rel="icon" href="images/favicon.ico" type="image/x-icon" />
   <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon" />
   <script src="https://use.fontawesome.com/450e77e423.js"></script>
@@ -58,17 +57,17 @@
   </div>
  <div class="album py-5 bg-light">
     <div class="container">
-        <form:form modelAttribute="courseAddForm" method="POST" action="/mainTeacher/courseAdd/proceed" id="courseAddForm" validate="true">
+        <form id="courseAddForm">
         <div class="form-group">
             <label for="courseTitle">Название курса</label>
-            <form:input type="text" path="title" class="form-control" id="courseTitle" placeholder="Введите название курса" required=""/>
+            <input type="text" path="title" class="form-control" id="courseTitle" placeholder="Введите название курса" required=""/>
         </div>
         <div class="form-group">
             <label for="courseDescription">Описание курса</label>
-             <form:textarea path="description" class="form-control" id="courseDescription" rows="5"/>
+             <textarea path="description" class="form-control" id="courseDescription" rows="5"></textarea>
         </div>
         <div class="form-group">
-            <form:input path="hours" type="number" class="form-control" id="hours" placeholder="Количество часов" required=""/>
+            <input path="hours" type="number" class="form-control" id="hours" placeholder="Количество часов" required=""/>
         </div>
         <div class="form-group row">
     		<div class="col-auto">
@@ -81,7 +80,7 @@
   		<div class="form-group mb-5" id="tableThemes">
          </div>
         <button type="submit" class="btn btn-primary">Добавить курс</button>
-        </form:form>
+        </form>
     </div>
   </div>
 
@@ -112,7 +111,6 @@
         	</div>
         	<div class="input-group mb-3">
   				<div class="custom-file">
-  				     <%--<input type="file" class="form-control-file" id="exampleFormControlFile1">--%>
     				<input type="file" class="custom-file-input" id="inputGroupFile01" aria-describedby="inputGroupFileAddon01">
     				<label class="custom-file-label" for="inputGroupFile01">Выбрать файл</label>
   				</div>
@@ -131,14 +129,15 @@
 </div>
 <!--end modal-->
   <footer class="text-muted">
-  <div class="container">
-    <p class="float-right">
-      <a href="#">Вверх</a>
-    </p>
-    <p> © 2020</p>
-  </div>
-</footer>
-    <!-- jQuery and Bootstrap Bundle (includes Popper) -->
+    <div class="container">
+        <p class="float-right">
+            <a href="#">Вверх</a>
+        </p>
+        <p> © 2020</p>
+    </div>
+  </footer>
+    <!-- jQuery and Botstrap Bundle (includes Popper) -->
+
     <script src="/js/jquery-3.5.1.js"></script>
     <script src="/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="/js/courseAdd.js"></script>

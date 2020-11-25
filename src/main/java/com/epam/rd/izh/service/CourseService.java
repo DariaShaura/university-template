@@ -14,19 +14,21 @@ public interface CourseService {
 
     Course getCourse(long id);
 
-    Theme getTheme(ThemeDto themeDto);
+    Theme getTheme(long idCourse, ThemeDto themeDto);
 
     List<Theme> getCourseThemes(long idCourse);
 
     List<Material> getThemeMaterials(long idTheme);
 
+    Material getMaterial(long idTheme, MaterialDto materialDto);
+
     List<MaterialDto> getMaterialsDto(List<Material> materialList);
 
     boolean addCourse(Course course);
 
-    boolean addThemeInCourse(Theme theme);
+    boolean addTheme(Theme theme);
 
-    boolean addMaterialInTheme(Material material);
+    boolean addMaterial(Material material);
 
     CourseDto getCourseDto(String login, Course course, List<ThemeDto> themesDto);
 

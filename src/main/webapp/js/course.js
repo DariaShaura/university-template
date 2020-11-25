@@ -1,7 +1,5 @@
 ﻿$(document).ready(function() {
         window.addEventListener("load",function() {
-               console.log("$(#idCourse)");
-              console.log(localStorage.getItem('idCourse'));
                doAjaxPost();
             });
 
@@ -25,9 +23,6 @@
 });
 function doAjaxPost() {
     var idCourse = localStorage.getItem('idCourse');
-    if(!!!idCourse){
-        idCourse = "$(#idCourse)";
-    }
 
 
    $.ajax({
@@ -62,7 +57,7 @@ function doAjaxPost() {
                                             var materialHref = $("<a></a>");
                                             materialHref.addClass("lectureTitle");
                                             materialHref.attr("href","#");
-                                            materialHref.html(imgMaterialType +"<pre>" + material["type"] + ":    </pre>" + material["title"]);
+                                            materialHref.html(imgMaterialType + material["type"] + ":    " + material["title"]);
 
                                             listElement.append(materialHref);
                                             $("#themesContainer").find("ol.themeMaterials").last().append(listElement);

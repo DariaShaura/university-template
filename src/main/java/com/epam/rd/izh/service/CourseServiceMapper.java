@@ -44,9 +44,12 @@ public class CourseServiceMapper implements CourseService{
     }
 
     @Override
-    public Theme getTheme(ThemeDto themeDto){
-        //TODO
-        Theme theme = new Theme();
+    public Theme getTheme(long idCourse, ThemeDto themeDto){
+
+        Theme theme = new Theme().builder()
+                                .title(themeDto.getTitle())
+                                .id_Course(idCourse)
+                                .build();
 
         return theme;
     }
@@ -62,12 +65,12 @@ public class CourseServiceMapper implements CourseService{
     }
 
     @Override
-    public boolean addThemeInCourse(Theme theme){
+    public boolean addTheme(Theme theme){
         return courseRepository.addTheme(theme);
     }
 
     @Override
-    public boolean addMaterialInTheme(Material material){
+    public boolean addMaterial(Material material){
         return courseRepository.addMaterial(material);
     }
 
@@ -77,6 +80,16 @@ public class CourseServiceMapper implements CourseService{
                 .title(material.getTitle())
                 .type(material.getType())
                 .path(material.getPath())
+                .build();
+    }
+
+    @Override
+    public Material getMaterial(long idTheme, MaterialDto materialDto){
+        return new Material().builder()
+                .title(materialDto.getTitle())
+                .type(materialDto.getType())
+                .path(materialDto.getPath())
+                .id_Theme(idTheme)
                 .build();
     }
 
