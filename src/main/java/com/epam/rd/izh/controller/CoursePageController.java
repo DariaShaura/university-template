@@ -1,15 +1,15 @@
 package com.epam.rd.izh.controller;
 
-import com.epam.rd.izh.dto.AuthorizedUserDto;
-import com.epam.rd.izh.dto.CourseDto;
-import com.epam.rd.izh.dto.MaterialDto;
-import com.epam.rd.izh.dto.ThemeDto;
+import com.epam.rd.izh.dto.*;
 import com.epam.rd.izh.entity.Course;
 import com.epam.rd.izh.entity.Material;
+import com.epam.rd.izh.entity.Schedule;
 import com.epam.rd.izh.entity.Theme;
+import com.epam.rd.izh.exception.IncorrectDataException;
 import com.epam.rd.izh.service.CourseService;
 import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -31,29 +31,8 @@ import java.util.stream.Collectors;
 @Controller
 public class CoursePageController {
 
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Setter
-    @Getter
-    private class CourseTemp{
-        private String title;
-        private String description;
-        private int hours;
-        private String teacherLogin;
-    }
-
     @Autowired
     CourseService courseService;
-
-    @Getter
-    private class GettingIdCourse {
-
-        String idCourse;
-
-        public void setIdCourse(String idCourse) {
-            this.idCourse = idCourse;
-        }
-    }
 
     @GetMapping("/mainTeacher/courseAdd")
     public String addCourse(Authentication authentication, Model model) {
@@ -104,20 +83,77 @@ public class CoursePageController {
 
         // получить сущность Курс, Темы, Материалы
         Course course = courseService.getCourse(idCourse);
-        List<Theme> themes = courseService.getCourseThemes(idCourse);
-        List<ThemeDto> themeDtoList = new ArrayList<>();
-        for(Theme theme: themes){
-            long idTheme = theme.getId();
-            // получить список материалов
-            List<Material> materials = courseService.getThemeMaterials(idTheme);
-            List<MaterialDto> materialDtoList = courseService.getMaterialsDto(materials);
 
-            themeDtoList.add(courseService.getThemeDto(theme, materialDtoList));
-        }
-        // создать класс CourseDTO из сущностей Курс, Темы, Материалы
-        CourseDto courseDto = courseService.getCourseDto(login, course, themeDtoList);
+        // создать класс CourseDTO из сущности Course
+        CourseDto courseDto = courseService.getCourseDto(login, course);
 
         // отправить класс CourseDTO в ответе на Post-запрос
         return ResponseEntity.ok(courseDto);
     }
+
+    @PostMapping(value = "/mainTeacher/course/delete", produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody
+    ResponseEntity<?> deleteCourse(HttpServletRequest request) {
+
+        long idCourse = Long.parseLong(request.getParameter("idCourse"));
+
+        boolean delete = courseService.deleteCourse(idCourse);
+
+        // отправить класс CourseDTO в ответе на Post-запрос
+        return ResponseEntity.ok(delete);
+    }
+
+    @PostMapping(value = "/mainTeacher/course/edit", produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody
+    ResponseEntity<?> editCourse(@Valid @RequestBody CourseDto courseDto, Errors errors) {
+
+        CourseDto updatedCourseDto = courseService.updateCourseThemesMaterials(courseDto);
+
+        return ResponseEntity.ok(updatedCourseDto);
+    }
+
+    @PostMapping(value = "/mainTeacher/course/schedule/load", produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody ResponseEntity<?> getCourseSchedule(HttpServletRequest request){
+        long idCourse = Long.parseLong(request.getParameter("idCourse"));
+
+        List<ScheduleDto> scheduleDtoList = courseService.getCourseScheduleDto(idCourse);
+
+        return ResponseEntity.ok(scheduleDtoList);
+    }
+
+    @PostMapping(value = "/mainTeacher/course/schedule/update", produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody ResponseEntity<?> updateCourseSchedule(@Valid @RequestBody List<ScheduleDto> scheduleDtoList){
+
+        try {
+            courseService.updateCourseSchedule(scheduleDtoList);
+
+            return ResponseEntity.ok(scheduleDtoList);
+        }
+        catch (IncorrectDataException e){
+            long incorrectScheduleId = ((ScheduleDto)(e.getIncorrectObject())).getId();
+
+            return new ResponseEntity<>(
+                    incorrectScheduleId,
+                    HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping(value = "/mainTeacher/course/participants", produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody ResponseEntity<?> getCourseParticipants(HttpServletRequest request){
+        long idCourse = Long.parseLong(request.getParameter("idCourse"));
+
+        List<ParticipantDto> courseParticipantList = courseService.getCourseParticipants(idCourse);
+
+        return ResponseEntity.ok(courseParticipantList);
+    }
+
+    @PostMapping(value = "/mainTeacher/course/marks", produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody ResponseEntity<?> getCourseMarks(HttpServletRequest request){
+        long idCourse = Long.parseLong(request.getParameter("idCourse"));
+
+        List<MarkDto> courseMarkList = courseService.getCourseMarks(idCourse);
+
+        return ResponseEntity.ok(courseMarkList);
+    }
+
 }

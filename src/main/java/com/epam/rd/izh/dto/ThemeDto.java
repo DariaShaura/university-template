@@ -12,6 +12,8 @@ import java.util.List;
 @Setter(value = AccessLevel.PUBLIC)
 @Getter
 public class ThemeDto {
+    private long id;
     private String title;
     private List<MaterialDto> materials;
+    @Builder.Default private NeedAction needAction = NeedAction.NONE;
 }

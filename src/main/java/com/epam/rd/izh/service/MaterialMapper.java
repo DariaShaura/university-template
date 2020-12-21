@@ -18,7 +18,8 @@ public class MaterialMapper implements RowMapper<Material> {
                     .title(resultSet.getString("material.title"))
                     .type(resultSet.getString("material.type"))
                     .path(resultSet.getString("material.path"))
-                    .id_Theme(resultSet.getLong("material.id_theme"))
+                    .idTheme(resultSet.getLong("material.id_theme"))
+                    .idCourse(resultSet.getLong("material.id_course"))
                     .build();
 
             return material;

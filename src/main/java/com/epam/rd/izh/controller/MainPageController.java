@@ -1,5 +1,6 @@
 package com.epam.rd.izh.controller;
 
+import com.epam.rd.izh.service.CourseService;
 import com.epam.rd.izh.service.UserService;
 import jdk.nashorn.internal.ir.debug.JSONWriter;
 import lombok.Getter;
@@ -39,14 +40,20 @@ public class MainPageController {
     @Autowired
     UserService userService;
 
+    @Autowired
+    CourseService courseService;
+
     @GetMapping("/main")
     public String mainPage(Authentication authentication) {
 
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         boolean authorized = authorities.contains(new SimpleGrantedAuthority("TEACHER"));
 
-        if(authorized){
+        if(authorities.contains(new SimpleGrantedAuthority("TEACHER"))){
             return "redirect:/mainTeacher";
+        }
+        else if (authorities.contains(new SimpleGrantedAuthority("STUDENT"))){
+            return "redirect:/mainStudent";
         }
 
          return "redirect:/login";
@@ -59,10 +66,6 @@ public class MainPageController {
 
         model.addAttribute("login", login);
 
-        List<Map<String, Object>> teachersCourses = userService.getTeachersCourses(login);
-
-        model.addAttribute("coursesList", teachersCourses);
-
         return "mainTeacher";
     }
 
@@ -71,7 +74,7 @@ public class MainPageController {
 
         String login = authentication.getName();
 
-        List<Map<String, Object>> teachersCourses = userService.getTeachersCourses(login);
+        List<Map<String, Object>> teachersCourses = courseService.getTeachersCourses(login);
 
         AjaxResponseBody responseBody = new AjaxResponseBody();
         responseBody.setResult(teachersCourses);

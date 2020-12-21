@@ -9,10 +9,12 @@ import org.springframework.stereotype.Component;
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
 @Setter(value = AccessLevel.PUBLIC)
 @Getter
+@EqualsAndHashCode
 public class Material {
     private long id;
     private String title;
     private String type;
     private String path;
-    private long id_Theme;
+    private long idTheme;
+    private long idCourse;
 }

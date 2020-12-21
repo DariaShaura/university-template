@@ -32,9 +32,7 @@
             Курсы
           </a>
           <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item" href="#">Курс1</a>
-            <a class="dropdown-item" href="#">Курс2</a>
-            <div class="dropdown-divider"></div>
+            <div class="dropdown-divider" id="afterTeacherCourseList"></div>
             <a class="dropdown-item" href="mainTeacher/courseAdd">Создать курс</a>
           </div>
         </li>

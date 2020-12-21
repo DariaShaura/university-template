@@ -10,7 +10,9 @@ import org.springframework.stereotype.Component;
 @Setter(value = AccessLevel.PUBLIC)
 @Getter
 public class MaterialDto {
+    private long id;
     private String title;
     private String type;
     private String path;
+    @Builder.Default private NeedAction needAction = NeedAction.NONE;
 }

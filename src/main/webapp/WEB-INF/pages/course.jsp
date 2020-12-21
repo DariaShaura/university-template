@@ -8,8 +8,8 @@
 	<title>Курc:</title>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
 	<link rel="stylesheet" href="/css/course.css">
-  <link rel="icon" href="images/favicon.ico" type="image/x-icon" />
-  <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon" />
+  <link rel="icon" href="/images/favicon.ico" type="image/x-icon" />
+  <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
   <script src="https://use.fontawesome.com/450e77e423.js"></script>
 </head>
 <body>
@@ -19,20 +19,18 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
         <li class="nav-item active">
-          <a class="nav-link" href="#">Курсы <span class="sr-only">(current)</span></a>
+          <a class="nav-link" href="/mainTeacher">Курсы <span class="sr-only">(current)</span></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Link</a>
+          <%--<a class="nav-link" href="#">Link</a>--%>
         </li>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             Курсы
           </a>
-          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item" href="#">Курс1</a>
-            <a class="dropdown-item" href="#">Курс2</a>
-            <div class="dropdown-divider"></div>
-            <a class="dropdown-item" href="#">Создать курс</a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown" id="teachersCourseList">
+            <div class="dropdown-divider" id="afterTeacherCourseList"></div>
+            <a class="dropdown-item" href="/mainTeacher/courseAdd">Создать курс</a>
           </div>
         </li>
       </ul>
@@ -53,10 +51,10 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
           <li class="nav-item active">
-            <a class="nav-link" href="#">Курсы > <span class="sr-only">(current)</span></a>
+            <a class="nav-link" href="/mainTeacher">Курсы > <span class="sr-only">(current)</span></a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#" id="hrefThisCourse">Курс1</a>
+            <a class="nav-link" href="#" id="hrefThisCourse"></a>
           </li>
         </ul>
       </div>
@@ -73,28 +71,16 @@
                 <a class="nav-link" href="#" id="hrefGrade"><i class="fa fa-bars" aria-hidden="true"></i> Оценки</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#"><i class="fa fa-calendar fa-lg" aria-hidden="true"></i> Расписание</a>
-              </li>
-            </ul>
-
-            <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-              <span>Saved reports</span>
-              <a class="d-flex align-items-center text-muted" href="#">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus-circle"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
-              </a>
-            </h6>
-            <ul class="nav flex-column mb-2">
-              <li class="nav-item">
-                <a class="nav-link" href="#">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                  Current month
-                </a>
+                <a class="nav-link" href="#" id="hrefSchedule"><i class="fa fa-calendar fa-lg" aria-hidden="true"></i> Расписание</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                  Last quarter
-                </a>
+                <hr>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#" id="hrefEditCourse"><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i> Редактировать курс</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#" id="hrefDeleteCourse"><i class="fa fa-times" aria-hidden="true"></i> Удалить курс</a>
               </li>
             </ul>
           </div>
@@ -128,71 +114,139 @@
            </div>
   </div>
 
-  <div id="tableStudentsSection">
+  <div id="courseScheduleTemp">
   <div class="table-responsive">
-        <table class="table table-striped table-sm">
-          <thead>
-            <tr>
-              <th>ФИО</th>
-              <th>Группа</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Губаев Эдуард Александрович</td>
-              <td>ГР-1</td>
-            </tr>
-            <tr>
-              <td>Гаврилова Диана Сергеевна</td>
-              <td>ГР-1</td>
-            </tr>
-            <tr>
-              <td>Тепин Данил Владимирович</td>
-              <td>ГР-1</td>
-            </tr>
-          </tbody>
-        </table>
+    <table class="table scheduleTable">
+                    <thead>
+                        <tr>
+                            <th scope="col" class="invisible .col- scheduleIndex">ID_schedule</th>
+                            <th scope="col" class="invisible .col- themeIndex">ID_course</th>
+                            <th class="text-center">Название темы</th>
+                            <th class="text-center">Начало</th>
+                            <th class="text-center">Конец</th>
+                        </tr>
+                    </thead>
+                    <tbody class="scheduleTbody">
+                    </tbody>
+    </table>
+  </div>
+  <button type="button" class="btn btn-primary scheduleUpdate">Внести изменения в расписание</button>
+  </div>
+
+<div id="courseMarksTemp">
+  <div class="table-responsive mb-3">
+    <table class="table marksTable">
+                    <thead>
+                        <tr>
+                            <th scope="col" class="invisible .col- markId">ID_schedule</th>
+                            <th scope="col" class="invisible .col- labId">ID_course</th>
+                            <th scope="col" class="invisible .col- studentId">ID_course</th>
+                            <th class="text-center">Фамилия</th>
+                            <th class="text-center">Имя</th>
+                            <th class="text-center">Лабораторная</th>
+                            <th class="text-center">Файл</th>
+                            <th class="text-center">Оценка</th>
+                        </tr>
+                    </thead>
+                    <tbody class="marksTbody">
+                    </tbody>
+    </table>
+  </div>
+  <button type="button" class="btn btn-primary marksUpdate">Внести изменения в оценки</button>
+  </div>
+
+    <div id="editCourseForm">
+    <h3 class="pb-1 text-center">Редактирование курса</h3>
+            <form id="courseEditForm">
+            <div class="form-group">
+                <label for="courseTitle">Название курса</label>
+                <input type="text" class="form-control" id="editCourseTitle" required="">
+            </div>
+            <div class="form-group">
+                <label for="courseDescription">Описание курса</label>
+                 <textarea class="form-control" id="editCourseDescription" rows="5" required=""></textarea>
+            </div>
+            <div class="form-group">
+                <label for="hours">Количество часов</label>
+                <input type="number" class="form-control" id="editCoursehours" required="" max="500">
+            </div>
+            <div class="form-group row">
+        		<div class="col-auto">
+        			<h4>Темы</h4>
+        		</div>
+
+        		<div class="input-group mb-3">
+                  <select class="form-control" id="editThemeList">
+                        <option id="choose">Выберите тему</option>
+                  </select>
+                  <div class="input-group-append">
+                      <button class="btn btn-outline-secondary" type="button" id="editCourseAddTheme">Добавить тему</button>
+                    </div>
+                </div>
+      		</div>
+      		<div class="form-group mb-5" id="tableThemes">
+             </div>
+            <button class="btn btn-primary" id="updateCourse">Обновить курс</button>
+            </form>
+    </div>
+
+    <div class="editTheme">
+      <div class="input-group mb-3">
+          <input type="text" class="form-control editThemeTitle">
+          <div class="input-group-append">
+            <button class="btn btn-outline-danger buttonDeleteTheme" type="button">Удалить тему</button>
+          </div>
       </div>
     </div>
 
-  <div id="gradeStudentsSection">
-  <div class="table-responsive">
-        <table class="table table-striped table-sm">
-          <thead>
-            <tr>
-              <th>ФИО</th>
-              <th>Итоговая оценка</th>
-              <th>Занятие 1</th>
-              <th>Занятие 2</th>
-              <th>Занятие 3</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Губаев Эдуард Александрович</td>
-              <td contenteditable='true'>3</td>
-              <td contenteditable='true'>3</td>
-              <td contenteditable='true'>3</td>
-              <td contenteditable='true'>4</td>
-            </tr>
-            <tr>
-              <td>Гаврилова Диана Сергеевна</td>
-              <td>4</td>
-              <td>4</td>
-              <td>4</td>
-              <td>4</td>
-            </tr>
-            <tr>
-              <td>Тепин Данил Владимирович</td>
-              <td>5</td>
-              <td>4</td>
-              <td>5</td>
-              <td>5</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-  </div>
+     <div class="materials">
+        <div class="form-row">
+            <div class="col text-right">
+                <a href="#" id="editCourseAddMaterial"><i class="fa fa-plus-square-o fa-2x" aria-hidden="true"></i></a>
+            </div>
+        </div>
+        <div class="form-row">
+            <table class="table text-center" id="editMaterialsTable">
+                <thead>
+                    <tr>
+                        <th class="invisible materialIndex">ID</th>
+                        <th class="text-center">Описание</th>
+                        <th class="text-center">Вид</th>
+                        <th class="text-center">Файл</th>
+                        <th class="text-center">Удалить</th>
+                    </tr>
+                </thead>
+                <tbody class="editMaterialsTbody">
+                </tbody>
+            </table>
+        </div>
+          <%--<div class="form-row">
+              <div class="form-group col-md-8 ">
+                    <label for="inputTitle">Описание</label>
+                    <input type="text" class="form-control editMaterialTitle">
+              </div>
+              <div class="form-group col-md-4">
+                <label for="editMaterialType">Вид материала</label>
+                <select class="form-control editMaterialType">
+                  <option value="Лекция">Лекция</option>
+                  <option value="Лабораторная">Лабораторная</option>
+                </select>
+              </div>
+          </div>
+          <div class="form-row">
+                <div class="input-group mb-3">
+                  <div class="custom-file">
+                    <input type="file" class="custom-file-input editMaterialPath" aria-describedby="inputGroupFileAddon01">
+                    <label class="custom-file-label">Загрузить другой файл</label>
+                  </div>
+                </div>
+          </div>
+          <div class="form-group row">
+            <button class="btn btn-primary">Удалить материал</button>
+          </div>--%>
+
+     </div>
+
 
   <footer class="text-muted">
   <div class="container">
@@ -206,5 +260,7 @@
     <script src="/js/jquery-3.5.1.js"></script>
     <script src="/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="/js/course.js"></script>
+    <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script>
 </body>
 </html>

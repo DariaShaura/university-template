@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import com.epam.rd.izh.exception.UserAlreadyRegisteredException;
+import com.epam.rd.izh.exception.UsersAgeCorrectnessException;
 import com.epam.rd.izh.repository.RoleRepository;
 import com.epam.rd.izh.service.RoleService;
 import com.epam.rd.izh.service.UserService;
@@ -96,13 +97,38 @@ public class AuthenticationController {
     return "registration";
   }
 
-  @GetMapping(value ="registration/availability", produces = MediaType.APPLICATION_JSON_VALUE)
-  public @ResponseBody Map<String, Boolean> loginAvailability(@RequestParam String name) {
+  @PostMapping(value ="/registration/availability", produces = MediaType.APPLICATION_JSON_VALUE)
+  public @ResponseBody ResponseEntity<?> loginAvailability(HttpServletRequest request) {
 
-    Map<String, Boolean> map = new HashMap<>();
-    map.put("status", userService.IsLoginCorrect(name));
+    boolean isAvailable = true;
 
-    return map;
+    if(request.getParameter("login") != null) {
+      try {
+        isAvailable = userService.isLoginAvailable(request.getParameter("login"));
+      }
+      catch (UserAlreadyRegisteredException ex){
+        isAvailable = false;
+      }
+    }
+    else if(request.getParameter("birthDate") != null){
+      try{
+        isAvailable = userService.isBirthDateCorrect(request.getParameter("birthDate"));
+      }
+      catch (UsersAgeCorrectnessException ex){
+        isAvailable = false;
+      }
+    }
+
+    if(isAvailable){
+      return new ResponseEntity<>(
+              true,
+              HttpStatus.OK);
+    }
+    else{
+      return new ResponseEntity<>(
+              false,
+              HttpStatus.BAD_REQUEST);
+    }
   }
 
 

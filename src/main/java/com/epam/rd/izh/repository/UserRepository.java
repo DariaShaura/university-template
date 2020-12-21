@@ -91,17 +91,10 @@ public class UserRepository {
       return jdbcTemplate.update(
               query_insertUser,
               user.getFirstName(), user.getSecondName(), user.getLastName(),
-                    user.getBirthDate(), roleId, user.getLogin(), user.getPassword()
+                    user.getBirthDate().toString(), roleId, user.getLogin(), user.getPassword()
       ) > 0;
     }
     return false;
-  }
-
-  public List<Map<String, Object>> getCourses(long id_teacher){
-
-    String query_getTeachersCourses = "SELECT id, title FROM course WHERE course.id_teacher = ?";
-
-    return jdbcTemplate.queryForList(query_getTeachersCourses, id_teacher);
   }
 
   public boolean IsUserInDB(String login){

@@ -1,9 +1,9 @@
 $(document).ready(function() {
   $('[data-toggle="tooltip"]').tooltip();
 
-    $('.custom-file-input').on('change', function() {
-       let fileName = $(this).val().split('\\').pop();
-       $(this).next('.custom-file-label').addClass("selected").html(fileName);
+    $(document).on('click', '#themeDelete', function(){
+        $(this).parent().parent().next().remove();
+        $(this).parent().parent().remove();
     });
 
 	$("#addClassInCourse").click(function(event){
@@ -59,29 +59,25 @@ function doAjaxPost() {
                 table.find('tr').each(function(row){
                 	var tds = $(this).children('td');
                         materials.push({
+                            id: 0,
                             title: $(tds[0]).text(),
                             type: $(tds[1]).text(),
                             path: $(tds[2]).text()
                         });
                 });
                 theme.push({
+                    id: 0,
                     title: elementJ.text(),
                     materials: materials
                 });
             });
 
+             course["id"] = 0;
              course["title"]= $("#courseTitle").val();
              course["description"]= $("#courseDescription").val();
              course["hours"] = $("#hours").val();
              course["teacherLogin"]= "";
-             course["themes"] = theme;//,
-            /*course.push({
-                  title: $("#courseTitle").val(),
-                  description: $("#courseDescription").val(),
-                  hours: $("#hours").val(),
-                  teacherLogin: ""//,
-                  //themes: theme
-            });*/
+             course["themes"] = theme;
 
             let courseStr = JSON.stringify(course);
 

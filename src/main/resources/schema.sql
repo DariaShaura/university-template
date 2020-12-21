@@ -43,14 +43,15 @@ CREATE TABLE `material` (
   `type` VARCHAR(20) collate utf8_bin NOT NULL,
   `path` MEDIUMTEXT collate utf8_bin NOT NULL,
   `id_theme` INT NOT NULL,
+  `id_course` INT NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE);
 
 CREATE TABLE `schedule` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `start_date` DATE NOT NULL,
-  `end_date` DATE NOT NULL,
   `id_theme` INT NOT NULL,
+  `start_date` DATE,
+  `end_date` DATE,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE);
 
@@ -68,7 +69,6 @@ CREATE TABLE `mark` (
   `id_lab` INT NOT NULL,
   `mark` INT NULL,
   `path` MEDIUMTEXT collate utf8_bin NULL,
-  `passed` TINYINT(1) NOT NULL DEFAULT 0,
   UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
   PRIMARY KEY (`id`));
 
@@ -128,6 +128,13 @@ ADD CONSTRAINT `material_theme`
   REFERENCES `theme` (`id`)
   ON DELETE CASCADE
   ON UPDATE NO ACTION;
+
+  ALTER TABLE `material`
+  ADD CONSTRAINT `material_course`
+    FOREIGN KEY (`id_course`)
+    REFERENCES course (`id`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION;
 
 ALTER TABLE `schedule`
 ADD CONSTRAINT `schedule_theme`

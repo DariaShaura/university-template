@@ -1,18 +1,23 @@
 package com.epam.rd.izh.service;
 
-import com.epam.rd.izh.dto.CourseDto;
-import com.epam.rd.izh.dto.MaterialDto;
-import com.epam.rd.izh.dto.ThemeDto;
+import com.epam.rd.izh.dto.*;
 import com.epam.rd.izh.entity.Course;
 import com.epam.rd.izh.entity.Material;
+import com.epam.rd.izh.entity.Schedule;
 import com.epam.rd.izh.entity.Theme;
+import com.epam.rd.izh.exception.IncorrectDataException;
 
 import java.util.List;
+import java.util.Map;
 
 public interface CourseService {
     Course getCourse(CourseDto courseDto);
 
     Course getCourse(long id);
+
+    List<Map<String, Object>> getTeachersCourses(String login);
+
+    List<Map<String, Object>> getStudentCourses(String login);
 
     Theme getTheme(long idCourse, ThemeDto themeDto);
 
@@ -30,9 +35,25 @@ public interface CourseService {
 
     boolean addMaterial(Material material);
 
-    CourseDto getCourseDto(String login, Course course, List<ThemeDto> themesDto);
+    CourseDto getCourseDto(String login, Course course);
 
     ThemeDto getThemeDto(Theme theme, List<MaterialDto> materialsDto);
 
     MaterialDto getMaterialDto(Material material);
+
+    boolean deleteCourse(long id);
+
+    CourseDto updateCourseThemesMaterials(CourseDto courseDto);
+
+    List<ScheduleDto> getCourseScheduleDto(long id);
+
+    Schedule getSchedule(ScheduleDto scheduleDto) throws IncorrectDataException;
+
+    ScheduleDto getScheduleDto(Schedule schedule);
+
+    boolean updateCourseSchedule(List<ScheduleDto> scheduleDtoList) throws IncorrectDataException;
+
+    List<ParticipantDto> getCourseParticipants(long idCourse);
+
+    List<MarkDto> getCourseMarks(long idCourse);
 }

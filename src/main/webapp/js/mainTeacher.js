@@ -5,7 +5,7 @@
         });
 
         $(document).on('click', 'a.courseHref', function(){
-                var gettingIdCourse = {};
+
                 if($("a.courseHref")){
                     console.log($(this).attr("id"));
                     localStorage.setItem('idCourse',$(this).attr("id"));
@@ -13,6 +13,16 @@
                     document.location.href = "/mainTeacher/course";
                 }
                 });
+
+        $(document).on('click', 'a.dropdownCourse', function(){
+
+                        if($("a.courseHref")){
+                            console.log($(this).attr("id"));
+                            localStorage.setItem('idCourse',$(this).attr("id"));
+                            console.log(localStorage.getItem('idCourse'));
+                            document.location.href = "/mainTeacher/course";
+                        }
+                        });
 });
 
 function doAjaxPost() {
@@ -22,6 +32,7 @@ function doAjaxPost() {
            dataType: 'json',
            success: function (data) {
             // отображаем курсы преподавателя
+                localStorage.setItem('coursesCount', data.length);
                 $.each(data, function(index,value) {
                     console.log('id = ' + value['id'] + '; Название = '+ value['title']);
                     $("#coursesContainer").append($("#hiddenCourse").html());
@@ -29,7 +40,18 @@ function doAjaxPost() {
                     $("#coursesContainer").find(".courseLink").last().find("img").attr("src", "images/image"+imageIndex+".jpg");
                     $("#coursesContainer").find(".courseLink").last().find("a").text(value['title']);
                     $("#coursesContainer").find(".courseLink").last().find("a").attr("id", value['id']);
+                    // добавляем список курсов в navBar
+                    var dropDownHref = $("<a></a>");
+                    dropDownHref.addClass("dropdown-item dropdownCourse");
+                    dropDownHref.attr('id',value['id']);
+                    dropDownHref.attr('href','#');
+                    dropDownHref.text(value['title']);
+                    $("#afterTeacherCourseList").before(dropDownHref);
+                    // добавляем в localStorage
+                    localStorage.setItem('courseId'+index, value['id']);
+                    localStorage.setItem('courseTitle'+index, value['title']);
                   });
+                  console.log(localStorage);
            }
        });
 }

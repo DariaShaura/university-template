@@ -12,9 +12,11 @@ import java.util.List;
 @Setter(value = AccessLevel.PUBLIC)
 @Getter
 public class CourseDto {
+    private long id;
     private String title;
     private String description;
     private int hours;
     private String teacherLogin;
     private List<ThemeDto> themes;
+    @Builder.Default private NeedAction needAction = NeedAction.NONE;
 }

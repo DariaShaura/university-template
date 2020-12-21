@@ -28,10 +28,18 @@ a {
 	color: #007bff;
 }
 
-#tableStudentsSection, #courseDescriptionSection, #gradeStudentsSection, #theme{
+#tableStudentsSection, #courseDescriptionSection, #gradeStudentsSection, #theme, #editCourseForm, .editTheme, .materials, .upload, #courseScheduleTemp, #courseMarksTemp{
 	display: none;
 }
 
 .editCell{
 	contenteditable:'true';
+}
+
+.editThemeTitle{
+    color: #007bff;
+}
+
+.invisible{
+  display:none;
 }
