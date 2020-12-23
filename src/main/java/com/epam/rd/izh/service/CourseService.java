@@ -14,8 +14,6 @@ public interface CourseService {
 
     List<Map<String, Object>> getTeachersCourses(String login);
 
-    List<Map<String, Object>> getStudentCourses(String login);
-
     Theme getTheme(long idCourse, ThemeDto themeDto);
 
     List<Theme> getCourseThemes(long idCourse);
@@ -54,9 +52,15 @@ public interface CourseService {
 
     List<MarkDto> getCourseMarks(long idCourse);
 
-    public boolean updateCourseMarks(List<MarkDto> markDtoList) throws IncorrectDataException;
+    boolean updateCourseMarks(List<MarkDto> markDtoList) throws IncorrectDataException;
 
     Mark getMark(MarkDto markDto) throws IncorrectDataException;
 
-    public boolean updateCourseAttendence(List<ParticipantDto> participantDtoList);
+    boolean updateCourseAttendence(List<ParticipantDto> participantDtoList);
+
+    List<StudentCourseDto> getStudentsCourseList(String login);
+
+    List<StudentPossibleCourseDto> getStudentPossibleCourseList(long idStudent);
+
+    List<CourseLabDto> getCourseLabList(long idCourse);
 }

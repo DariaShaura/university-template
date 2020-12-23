@@ -1,8 +1,6 @@
 package com.epam.rd.izh.repository;
 
-import com.epam.rd.izh.dto.MarkDto;
-import com.epam.rd.izh.dto.ParticipantDto;
-import com.epam.rd.izh.dto.ThemeAttendenceDto;
+import com.epam.rd.izh.dto.*;
 import com.epam.rd.izh.entity.*;
 import com.epam.rd.izh.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +51,15 @@ public class CourseRepository {
 
     @Autowired
     ThemeAttendenceDtoMapper themeAttendenceDtoMapper;
+
+    @Autowired
+    StudentCourseDtoMapper studentCourseDtoMapper;
+
+    @Autowired
+    StudentPossibleCourseDtoMapper studentPossibleCourseDtoMapper;
+
+    @Autowired
+    CourseLabDtoMapper courseLabDtoMapper;
 
     public boolean addCourse(@Nullable Course course) {
 
@@ -150,15 +157,6 @@ public class CourseRepository {
         String query_getTeachersCourses = "SELECT id, title FROM course WHERE course.id_teacher = ?";
 
         return jdbcTemplate.queryForList(query_getTeachersCourses, id_teacher);
-    }
-
-    public List<Map<String, Object>> getDescribedOnCourses(long id_Student){
-
-        String query_getStudentCourses = "SELECT course.id, course.title FROM admission left join course " +
-                "ON admission.id_course = course.id "+
-                "WHERE admission.id_student = ?";
-
-        return jdbcTemplate.queryForList(query_getStudentCourses, id_Student);
     }
 
     public List<Theme> getThemeList(long idCourse){
@@ -291,4 +289,25 @@ public class CourseRepository {
         ) > 0;
     }
 
+    public List<StudentCourseDto> getStudentCourses(long idStudent){
+        String queryGetStudentCourses = "SELECT id_course, course.title FROM admission "+
+                                        "LEFT JOIN course ON course.id = admission.id_course WHERE id_student=?";
+
+        return jdbcTemplate.query(queryGetStudentCourses, new Object[]{idStudent}, studentCourseDtoMapper);
+    }
+
+    public List<StudentPossibleCourseDto> getStudentPossibleCourses(long idStudent){
+        String queryGetStudentPossibleCourses = "SELECT course.id, course.title, concat(lastName, ' ',substring(firstName,1,1), '.',substring(secondName,1,1),'.') as teacher_name," +
+                            "course.hours FROM university_.course left join user ON user.id=course.id_teacher " +
+                            "where course.id not in (select id_course from admission where id_student=?)";
+
+        return jdbcTemplate.query(queryGetStudentPossibleCourses, new Object[]{idStudent}, studentPossibleCourseDtoMapper);
+    }
+
+    public List<CourseLabDto> getCourseLabList(long idCourse){
+        String getCourseLabsList = "SELECT material.id_course as idCourse, material.id as idLab, material.title as labTitle FROM material " +
+                "WHERE (material.id_course=?)AND(material.type='Лабораторная')";
+
+        return jdbcTemplate.query(getCourseLabsList, new Object[]{idCourse}, courseLabDtoMapper);
+    }
 }

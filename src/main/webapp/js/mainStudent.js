@@ -23,22 +23,22 @@ function doAjaxPost() {
             // отображаем курсы, на которые подписан студент
                 localStorage.setItem('coursesCount', data.length);
                 $.each(data, function(index,value) {
-                    console.log('id = ' + value['id'] + '; Название = '+ value['title']);
+                    console.log('id = ' + value['idCourse'] + '; Название = '+ value['courseTitle']);
                     $("#coursesContainer").append($("#hiddenCourse").html());
                     var imageIndex = index + 1;
                     $("#coursesContainer").find(".courseLink").last().find("img").attr("src", "images/image"+imageIndex+".jpg");
-                    $("#coursesContainer").find(".courseLink").last().find("a").text(value['title']);
-                    $("#coursesContainer").find(".courseLink").last().find("a").attr("id", value['id']);
+                    $("#coursesContainer").find(".courseLink").last().find("a").text(value['courseTitle']);
+                    $("#coursesContainer").find(".courseLink").last().find("a").attr("id", value['idCourse']);
                     // добавляем список курсов в navBar
                     var dropDownHref = $("<a></a>");
                     dropDownHref.addClass("dropdown-item dropdownCourse");
-                    dropDownHref.attr('id',value['id']);
+                    dropDownHref.attr('id',value['idCourse']);
                     dropDownHref.attr('href','#');
-                    dropDownHref.text(value['title']);
+                    dropDownHref.text(value['courseTitle']);
                     $("#afterTeacherCourseList").before(dropDownHref);
                     // добавляем в localStorage
-                    localStorage.setItem('courseId'+index, value['id']);
-                    localStorage.setItem('courseTitle'+index, value['title']);
+                    localStorage.setItem('courseId'+index, value['idCourse']);
+                    localStorage.setItem('courseTitle'+index, value['courseTitle']);
                   });
                   console.log(localStorage);
            }

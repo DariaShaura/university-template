@@ -1,5 +1,6 @@
 package com.epam.rd.izh.controller;
 
+import com.epam.rd.izh.dto.StudentCourseDto;
 import com.epam.rd.izh.service.CourseService;
 import com.epam.rd.izh.service.UserService;
 import jdk.nashorn.internal.ir.debug.JSONWriter;
@@ -46,7 +47,7 @@ public class MainPageStudentController {
 
         String login = authentication.getName();
 
-        List<Map<String, Object>> studentCourses = courseService.getStudentCourses(login);
+        List<StudentCourseDto> studentCourses = courseService.getStudentsCourseList(login);
 
         return ResponseEntity.ok(studentCourses);
     }

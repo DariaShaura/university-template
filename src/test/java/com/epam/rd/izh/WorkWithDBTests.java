@@ -1,8 +1,6 @@
 package com.epam.rd.izh;
 
-import com.epam.rd.izh.dto.MarkDto;
-import com.epam.rd.izh.dto.ParticipantDto;
-import com.epam.rd.izh.dto.ThemeAttendenceDto;
+import com.epam.rd.izh.dto.*;
 import com.epam.rd.izh.entity.*;
 import com.epam.rd.izh.repository.CourseRepository;
 import com.epam.rd.izh.repository.RoleRepository;
@@ -316,18 +314,6 @@ public class WorkWithDBTests {
     }
 
     @Test
-    @DisplayName("Тест метода - getDescribedOnCourses()")
-    void getDescribedOnCoursesTest(){
-        assertThat(courseRepository.getDescribedOnCourses(4),
-                Matchers.hasItem(Matchers.<Map<String, Object>>allOf(hasEntry("id", 1),
-                        hasEntry("title", "Методы оптимизации"))));
-
-        assertThat(courseRepository.getDescribedOnCourses(4),
-                Matchers.hasItem(Matchers.<Map<String, Object>>allOf(hasEntry("id", 2),
-                        hasEntry("title", "test Course1"))));
-    }
-
-    @Test
     @DisplayName("Тест метода - getCourseSchedule()")
     void getCourseScheduleTest(){
 
@@ -423,5 +409,38 @@ public class WorkWithDBTests {
                                                 .build();
 
         assertTrue(courseRepository.updateAttendence(attendence));
+    }
+
+    @Test
+    @DisplayName("Тест метода getStudentCourse()")
+    void getStudentCourseTest(){
+        StudentCourseDto studentCourseDto = new StudentCourseDto().builder().idCourse(1).courseTitle("Методы оптимизации").build();
+
+        assertThat(courseRepository.getStudentCourses(4), hasItem(studentCourseDto));
+    }
+
+    @Test
+    @DisplayName("Тест метода getStudentPossibleCourses()")
+    void getStudentPossibleCoursesTest(){
+        StudentPossibleCourseDto studentPossibleCourseDto = new StudentPossibleCourseDto().builder()
+                .idCourse(3)
+                .hours(4)
+                .courseTitle("test Course1")
+                .teacherName("Петров П.П.")
+                .build();
+
+        assertThat(courseRepository.getStudentPossibleCourses(4), hasItem(studentPossibleCourseDto));
+    }
+
+    @Test
+    @DisplayName("Тест метода getCourseLabsList()")
+    void getCourseLabsListTest(){
+        CourseLabDto courseLabDto = new CourseLabDto().builder()
+                                                .idCourse(2)
+                                                .idLab(6)
+                                                .labTitle("Множества")
+                                                .build();
+
+        assertThat(courseRepository.getCourseLabList(2), hasItem(courseLabDto));
     }
 }

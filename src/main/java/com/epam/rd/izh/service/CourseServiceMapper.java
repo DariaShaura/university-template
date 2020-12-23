@@ -58,13 +58,6 @@ public class CourseServiceMapper implements CourseService{
     }
 
     @Override
-    public List<Map<String, Object>> getStudentCourses(String login){
-        long id_student = userService.getAuthorizedUserId(login);
-
-        return courseRepository.getDescribedOnCourses(id_student);
-    }
-
-    @Override
     public Theme getTheme(long idCourse, ThemeDto themeDto){
 
         Theme theme = new Theme().builder()
@@ -334,5 +327,19 @@ public class CourseServiceMapper implements CourseService{
         }
 
         return true;
+    }
+
+    public List<StudentCourseDto> getStudentsCourseList(String login){
+        long idStudent = userService.getAuthorizedUserId(login);
+
+        return courseRepository.getStudentCourses(idStudent);
+    }
+
+    public List<StudentPossibleCourseDto> getStudentPossibleCourseList(long idStudent){
+        return courseRepository.getStudentPossibleCourses(idStudent);
+    }
+
+    public List<CourseLabDto> getCourseLabList(long idCourse){
+        return  courseRepository.getCourseLabList(idCourse);
     }
 }
