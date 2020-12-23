@@ -138,13 +138,23 @@ public class CoursePageController {
         }
     }
 
-    @PostMapping(value = "/mainTeacher/course/participants", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/mainTeacher/course/participantsAttendence", produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody ResponseEntity<?> getCourseParticipants(HttpServletRequest request){
         long idCourse = Long.parseLong(request.getParameter("idCourse"));
 
         List<ParticipantDto> courseParticipantList = courseService.getCourseParticipants(idCourse);
 
         return ResponseEntity.ok(courseParticipantList);
+    }
+
+    @PostMapping(value = "/mainTeacher/course/participantsAttendence/update", produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody ResponseEntity<?> updateCourseParticipantsAttendence(@Valid @RequestBody List<ParticipantDto> participantDtoList){
+
+        courseService.updateCourseAttendence(participantDtoList);
+
+        return new ResponseEntity<>(
+                true,
+                HttpStatus.OK);
     }
 
     @PostMapping(value = "/mainTeacher/course/marks", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -154,6 +164,23 @@ public class CoursePageController {
         List<MarkDto> courseMarkList = courseService.getCourseMarks(idCourse);
 
         return ResponseEntity.ok(courseMarkList);
+    }
+
+    @PostMapping(value = "/mainTeacher/course/marks/update", produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody ResponseEntity<?> updateCourseMarks(@Valid @RequestBody List<MarkDto> markDtoList){
+
+        try{
+            courseService.updateCourseMarks(markDtoList);
+
+            return ResponseEntity.ok(markDtoList);
+        }
+        catch (IncorrectDataException e){
+            long incorrectMarkId = ((MarkDto)(e.getIncorrectObject())).getId();
+
+            return new ResponseEntity<>(
+                    incorrectMarkId,
+                    HttpStatus.BAD_REQUEST);
+        }
     }
 
 }

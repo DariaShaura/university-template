@@ -120,6 +120,15 @@ $(document).ready(function() {
     updateSchedule();
   });
 
+  $(document).on('click','.marksUpdate', function(e){
+    updateMarks();
+  });
+
+  $(document).on('click','.studentsAttendenceUpdate', function(e){
+      updateAttendence();
+  });
+
+
 function doAjaxPost() {
     var idCourse = localStorage.getItem('idCourse');
 
@@ -467,7 +476,7 @@ function updateSchedule(){
                         var incorrectTd = $(".scheduleTable td.idSchedule").filter(function() {
                             return $(this).text() === data.responseText;
                         });
-                        //TODO
+
                         console.log(incorrectTd);
                         $($(incorrectTd.siblings()[3]).children()[0]).addClass("is-invalid");
                    }
@@ -481,29 +490,47 @@ function loadCourseStudents(){
 
            $.ajax({
                    type: "POST",
-                   url: "/mainTeacher/course/schedule/load",
+                   url: "/mainTeacher/course/participantsAttendence",
                    data: {"idCourse" : idCourse},
                    dataType: 'json',
                    success: function (data) {
                             // отображаем расписание
-                            var courseScheduleDiv = $("#courseScheduleTemp").clone();
-                            courseScheduleDiv.attr("id", "#courseSchedule");
-                            var table = courseScheduleDiv.find("table");
+                            var courseStudentsDiv = $("#courseStudentsTemp").clone();
+                            courseStudentsDiv.attr("id", "#courseStudents");
+                            var table = courseStudentsDiv.find("table");
+                            var tableHeadRow = table.find("thead > tr");
 
-                            $.each(data, function(index, themeSchedule){
+                             $.each(courseInfo["themes"], function(index,theme) {
+                                $("<th></th>").text(theme["title"]).appendTo(tableHeadRow);
+                             });
+
+                            $.each(data, function(index, courseStudents){
                                    var row = $("<tr></tr>");
-                                       $("<td></td>").addClass("invisible").addClass("idSchedule").text(themeSchedule["id"]).appendTo(row);
-                                       $("<td></td>").addClass("invisible").text(themeSchedule["idTheme"]).appendTo(row);
-                                       $("<td></td>").text(themeSchedule["themeTitle"]).appendTo(row);
-                                       var startDate = $("<input></input>").addClass("form-control").attr("type","date").attr("id","startDate").val(themeSchedule["startDate"]);
-                                       $("<td></td>").attr("contenteditable","true").append(startDate).appendTo(row);
-                                       var endDate = $("<input></input>").addClass("form-control").attr("type","date").attr("id","endDate").val(themeSchedule["endDate"]);
-                                       $("<td></td>").attr("contenteditable","true").append(endDate).appendTo(row);
+                                       $("<td></td>").addClass("invisible").addClass("idStudent").text(courseStudents["idStudent"]).appendTo(row);
+                                       $("<td></td>").text(courseStudents["lastName"]).appendTo(row);
+                                       $("<td></td>").text(courseStudents["firstName"]).appendTo(row);
+                                       $("<td></td>").text(courseStudents["secondName"]).appendTo(row);
+                                       $("<td></td>").text(courseStudents["birthDate"]).appendTo(row);
+                                       $.each(courseInfo["themes"], function(indexT,theme) {
+                                        var inputCheckbox = $("<input></input>").attr("type","checkbox");
+                                        if(courseStudents["attendenceList"][indexT]["attendence"] == true){
+                                            inputCheckbox.attr("checked","checked");
+                                        }
+                                        $("<td></td>").append(inputCheckbox).appendTo(row);
+                                       });
 
                                        row.appendTo(table.find("tbody"));
                             });
 
-                            $("#mainContent").empty().append(courseScheduleDiv);
+                            table.DataTable({
+                                              "paging": false,
+                                              "info": false,
+                                              "language": {
+                                                  "search": "Найти:"
+                                              }
+                                            });
+
+                            $("#mainContent").empty().append(courseStudentsDiv);
                     }
                    });
 }
@@ -546,5 +573,85 @@ function loadCourseMarks(){
                                              });
                             $("#mainContent").empty().append(courseMarksDiv);
                     }
+                   });
+}
+
+function updateMarks(){
+    var courseMarks = [];
+
+    $(".marksTable > tbody  > tr").each(function() {
+         var row = $(this).find('td');
+
+         courseMarks.push({
+         "id":$(row[0]).text(),
+         "idLab":$(row[1]).text(),
+         "idStudent":$(row[2]).text(),
+         "lastName":$(row[3]).text(),
+         "firstName":$(row[4]).text(),
+         "labDescription":$(row[5]).text(),
+         "pathToLab":$(row[6]).text(),
+         "mark":$($(row[7]).children()[0]).val()
+         })
+    });
+
+        $.ajax({
+                   type: "POST",
+                   url: "/mainTeacher/course/marks/update",
+                   data: JSON.stringify(courseMarks),
+                   contentType: "application/json",
+                   dataType: 'json',
+                   success: function (data) {
+                        $(".marksTable .is-invalid").each(function(){$(this).removeClass("is-invalid");})
+                        alert('Оценки обновлены');
+                    },
+                   error: function(data){
+                        var incorrectTd = $(".marksTable td.markId").filter(function() {
+                            return $(this).text() === data.responseText;
+                        });
+
+                        console.log(incorrectTd);
+                        $($(incorrectTd.siblings()[7]).children()[0]).addClass("is-invalid");
+                   }
+                   });
+}
+
+function updateAttendence(){
+    var courseAttendence = [];
+
+    $(".studentsTable > tbody  > tr").each(function() {
+         var row = $(this).find('td');
+
+        var attendenceList = [];
+        $.each(courseInfo["themes"], function(index,theme) {
+            var attended = ($($(row[5+index]).children()[0]).val() == "on") ? true : false;
+
+            attendenceList.push({
+                "idTheme": theme["id"],
+                "attendence": attended
+            });
+        });
+
+         courseAttendence.push({
+         "idStudent":$(row[0]).text(),
+         "lastName":$(row[1]).text(),
+         "firstName":$(row[2]).text(),
+         "secondName":$(row[3]).text(),
+         "birthDate":$(row[4]).text(),
+         "attendenceList": attendenceList
+         });
+    });
+
+        $.ajax({
+                   type: "POST",
+                   url: "/mainTeacher/course/participantsAttendence/update",
+                   data: JSON.stringify(courseAttendence),
+                   contentType: "application/json",
+                   dataType: 'json',
+                   success: function (data) {
+                        alert('Посещаемость обновлена');
+                    },
+                   error: function(data){
+
+                   }
                    });
 }

@@ -56,6 +56,8 @@ public class AuthenticationController {
    */
   @GetMapping("/login")
   public String login(Model model, @RequestParam(required = false) String error) {
+    model.addAttribute("error_login_placeholder", "");
+
     if (error != null) {
       /**
        * Model представляет из себя Map коллекцию ключ-значения, распознаваемую View элементами MVC.

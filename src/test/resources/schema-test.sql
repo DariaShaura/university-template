@@ -10,7 +10,7 @@ CREATE TABLE `material` ( `id` INT NOT NULL AUTO_INCREMENT, `title` VARCHAR(100)
 
 CREATE TABLE `schedule` (`id` INT NOT NULL AUTO_INCREMENT, `id_theme` INT NOT NULL, `start_date` DATE, `end_date` DATE, PRIMARY KEY (`id`))
 
-CREATE TABLE `attendence` (`id` INT NOT NULL AUTO_INCREMENT, `id_student` INT NOT NULL, `id_theme` INT NOT NULL, `attended` TINYINT NOT NULL, PRIMARY KEY (`id`))
+CREATE TABLE `attendence` (`id` INT NOT NULL AUTO_INCREMENT, `id_student` INT NOT NULL, `id_theme` INT NOT NULL, `attended` TINYINT NOT NULL DEFAULT 0, PRIMARY KEY (`id`))
 
 CREATE TABLE `mark` (`id` INT NOT NULL AUTO_INCREMENT, `id_student` INT NOT NULL, `id_lab` INT NOT NULL, `mark` INT NULL, `path` MEDIUMTEXT NULL, PRIMARY KEY (`id`))
 

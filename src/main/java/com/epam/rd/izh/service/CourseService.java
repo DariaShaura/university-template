@@ -1,10 +1,7 @@
 package com.epam.rd.izh.service;
 
 import com.epam.rd.izh.dto.*;
-import com.epam.rd.izh.entity.Course;
-import com.epam.rd.izh.entity.Material;
-import com.epam.rd.izh.entity.Schedule;
-import com.epam.rd.izh.entity.Theme;
+import com.epam.rd.izh.entity.*;
 import com.epam.rd.izh.exception.IncorrectDataException;
 
 import java.util.List;
@@ -56,4 +53,10 @@ public interface CourseService {
     List<ParticipantDto> getCourseParticipants(long idCourse);
 
     List<MarkDto> getCourseMarks(long idCourse);
+
+    public boolean updateCourseMarks(List<MarkDto> markDtoList) throws IncorrectDataException;
+
+    Mark getMark(MarkDto markDto) throws IncorrectDataException;
+
+    public boolean updateCourseAttendence(List<ParticipantDto> participantDtoList);
 }

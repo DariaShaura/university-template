@@ -1,6 +1,8 @@
 package com.epam.rd.izh;
 
 import com.epam.rd.izh.dto.MarkDto;
+import com.epam.rd.izh.dto.ParticipantDto;
+import com.epam.rd.izh.dto.ThemeAttendenceDto;
 import com.epam.rd.izh.entity.*;
 import com.epam.rd.izh.repository.CourseRepository;
 import com.epam.rd.izh.repository.RoleRepository;
@@ -23,6 +25,7 @@ import org.springframework.jdbc.support.SQLErrorCodes;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
+import javax.servlet.http.Part;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -362,16 +365,63 @@ public class WorkWithDBTests {
     @DisplayName("Тест метода - getCourseMarks()")
     void  getCourseMarksTest(){
         MarkDto expectedMarkDto = new MarkDto().builder()
-                                    .id(1)
-                                    .idLab(3)
-                                    .labDescription("Использование прикладных программ для решения оптимизационных задач")
+                                    .id(2)
+                                    .idLab(6)
+                                    .labDescription("Множества")
                                     .idStudent(4)
                                     .firstName("Мария")
                                     .lastName("Ромашкина")
-                                    .mark(4)
-                                    .pathToLab("testPath\\\\testPath")
+                                    .mark(0)
+                                    .pathToLab("testPath\\\\testPath1")
                                     .build();
 
-        assertThat(courseRepository.getCourseMarks(1), hasItem(expectedMarkDto));
+        List<MarkDto> marks = courseRepository.getCourseMarks(2);
+        assertThat(marks, hasItem(expectedMarkDto));
+    }
+
+    @Test
+    @DisplayName("Тест метода - updateMark()")
+    void  updateMarkTest(){
+        Mark mark = new Mark().builder()
+                .id(1)
+                .idLab(3)
+                .idStudent(4)
+                .path("testPath\\testPath")
+                .mark(5)
+                .build();
+
+        assertTrue(courseRepository.updateMark(mark));
+    }
+
+    @Test
+    @DisplayName("Tecт метода getCourseParticipants()")
+    void getCourseParticipantsTest(){
+        ParticipantDto participantDto = new ParticipantDto().builder()
+                                                            .idStudent(4)
+                                                            .lastName("Ромашкина")
+                                                            .firstName("Мария")
+                                                            .secondName("Федоровна")
+                                                            .birthDate("2000-03-07")
+                                                            .build();
+        participantDto.setAttendenceList(Arrays.asList(new ThemeAttendenceDto().builder().idTheme(1).attendence(false).build(),
+                                                        new ThemeAttendenceDto().builder().idTheme(2).attendence(false).build(),
+                                                        new ThemeAttendenceDto().builder().idTheme(3).attendence(false).build()));
+
+
+        List<ParticipantDto> participantDtoList = courseRepository.getCourseParticipants(1);
+
+        assertThat(participantDtoList, hasItem(participantDto));
+    }
+
+    @Test
+    @DisplayName("Тест метода updateAttendence()")
+    void updateAttendenceTest(){
+        Attendence attendence = new Attendence().builder()
+                                                .idStudent(4)
+                                                .idTheme(1)
+                                                .attended(true)
+                                                .build();
+
+        assertTrue(courseRepository.updateAttendence(attendence));
     }
 }

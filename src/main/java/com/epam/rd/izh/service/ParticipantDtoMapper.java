@@ -13,8 +13,9 @@ public class ParticipantDtoMapper implements RowMapper<ParticipantDto> {
 public ParticipantDto mapRow(ResultSet resultSet,int i)throws SQLException{
 
         ParticipantDto participantDto = ParticipantDto.builder()
+        .idStudent(resultSet.getLong("id_student"))
         .lastName(resultSet.getString("lastName"))
-        .firstname(resultSet.getString("firstName"))
+        .firstName(resultSet.getString("firstName"))
         .secondName(resultSet.getString("secondName"))
         .birthDate(resultSet.getString("birthDate"))
         .build();

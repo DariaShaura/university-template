@@ -10,6 +10,7 @@
 	<link rel="stylesheet" href="/css/course.css">
   <link rel="icon" href="/images/favicon.ico" type="image/x-icon" />
   <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
+  <link href="https://unpkg.com/bootstrap-table@1.18.1/dist/bootstrap-table.min.css" rel="stylesheet">
   <script src="https://use.fontawesome.com/450e77e423.js"></script>
 </head>
 <body>
@@ -116,7 +117,7 @@
 
   <div id="courseScheduleTemp">
   <div class="table-responsive">
-    <table class="table scheduleTable">
+    <table class="table scheduleTable table-hover">
                     <thead>
                         <tr>
                             <th scope="col" class="invisible .col- scheduleIndex">ID_schedule</th>
@@ -133,13 +134,32 @@
   <button type="button" class="btn btn-primary scheduleUpdate">Внести изменения в расписание</button>
   </div>
 
+  <div id="courseStudentsTemp">
+    <div class="table-responsive mb-3">
+      <table  class="table studentsTable table-hover">
+                      <thead>
+                          <tr>
+                              <th scope="col" class="invisible .col- studentIndex">ID_student</th>
+                              <th class="text-center">Фамилия</th>
+                              <th class="text-center">Имя</th>
+                              <th class="text-center">Отчество</th>
+                              <th class="text-center">Дата рождения</th>
+                          </tr>
+                      </thead>
+                      <tbody class="studentsTbody">
+                      </tbody>
+      </table>
+    </div>
+    <button type="button" class="btn btn-primary studentsAttendenceUpdate">Внести изменения в посещаемость</button>
+    </div>
+
 <div id="courseMarksTemp">
   <div class="table-responsive mb-3">
-    <table class="table marksTable">
+    <table class="table marksTable table-hover">
                     <thead>
                         <tr>
-                            <th scope="col" class="invisible .col- markId">ID_schedule</th>
-                            <th scope="col" class="invisible .col- labId">ID_course</th>
+                            <th scope="col" class="invisible .col- markId">ID_mark</th>
+                            <th scope="col" class="invisible .col- labId">ID_lab</th>
                             <th scope="col" class="invisible .col- studentId">ID_course</th>
                             <th class="text-center">Фамилия</th>
                             <th class="text-center">Имя</th>
@@ -262,5 +282,6 @@
     <script src="/js/course.js"></script>
     <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script>
+    <script src="https://unpkg.com/bootstrap-table@1.18.1/dist/bootstrap-table.min.js"></script>
 </body>
 </html>

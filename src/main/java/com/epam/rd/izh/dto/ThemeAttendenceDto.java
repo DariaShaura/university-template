@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-
 @Component
 @Builder(toBuilder = true)
 @AllArgsConstructor(access = AccessLevel.PUBLIC)
@@ -13,11 +12,7 @@ import java.util.List;
 @Setter(value = AccessLevel.PUBLIC)
 @Getter
 @EqualsAndHashCode
-public class ParticipantDto {
-    private long idStudent;
-    private String lastName;
-    private String firstName;
-    private String secondName;
-    private String birthDate;
-    private List<ThemeAttendenceDto> attendenceList;
+public class ThemeAttendenceDto {
+    private long idTheme;
+    private Boolean attendence;
 }

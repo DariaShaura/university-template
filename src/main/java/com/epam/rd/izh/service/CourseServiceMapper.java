@@ -1,10 +1,7 @@
 package com.epam.rd.izh.service;
 
 import com.epam.rd.izh.dto.*;
-import com.epam.rd.izh.entity.Course;
-import com.epam.rd.izh.entity.Material;
-import com.epam.rd.izh.entity.Schedule;
-import com.epam.rd.izh.entity.Theme;
+import com.epam.rd.izh.entity.*;
 import com.epam.rd.izh.exception.IncorrectDataException;
 import com.epam.rd.izh.repository.CourseRepository;
 import org.hibernate.validator.cfg.defs.NegativeDef;
@@ -294,5 +291,48 @@ public class CourseServiceMapper implements CourseService{
 
     public List<MarkDto> getCourseMarks(long idCourse){
         return courseRepository.getCourseMarks(idCourse);
+    }
+
+    public boolean updateCourseMarks(List<MarkDto> markDtoList)
+                    throws IncorrectDataException{
+
+        for(MarkDto markDto: markDtoList){
+            Mark mark = getMark(markDto);
+            courseRepository.updateMark(mark);
+        }
+
+        return true;
+    }
+
+    public Mark getMark(MarkDto markDto)
+            throws IncorrectDataException{
+        if((markDto.getMark() < 2) || (markDto.getMark() > 5) ){
+            throw new IncorrectDataException("Оценка должна быть от 2 до 5", markDto);
+        }
+
+        return new Mark().builder()
+                            .id(markDto.getId())
+                            .idStudent(markDto.getIdStudent())
+                            .idLab(markDto.getIdLab())
+                            .path(markDto.getPathToLab())
+                            .mark(markDto.getMark())
+                            .build();
+    }
+
+    public boolean updateCourseAttendence(List<ParticipantDto> participantDtoList){
+
+        for(ParticipantDto participantDto: participantDtoList){
+            for(ThemeAttendenceDto themeAttendenceDto: participantDto.getAttendenceList()) {
+                Attendence attendence = new Attendence().builder()
+                        .idStudent(participantDto.getIdStudent())
+                        .idTheme(themeAttendenceDto.getIdTheme())
+                        .attended(themeAttendenceDto.getAttendence())
+                        .build();
+
+                courseRepository.updateAttendence(attendence);
+            }
+        }
+
+        return true;
     }
 }

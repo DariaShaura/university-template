@@ -1,3 +1,16 @@
+table.dataTable thead .sorting:after,
+table.dataTable thead .sorting:before,
+table.dataTable thead .sorting_asc:after,
+table.dataTable thead .sorting_asc:before,
+table.dataTable thead .sorting_asc_disabled:after,
+table.dataTable thead .sorting_asc_disabled:before,
+table.dataTable thead .sorting_desc:after,
+table.dataTable thead .sorting_desc:before,
+table.dataTable thead .sorting_desc_disabled:after,
+table.dataTable thead .sorting_desc_disabled:before {
+bottom: .5em;
+}
+
 body {
   min-width: 320px;
   font-size: 16px;
@@ -28,7 +41,7 @@ a {
 	color: #007bff;
 }
 
-#tableStudentsSection, #courseDescriptionSection, #gradeStudentsSection, #theme, #editCourseForm, .editTheme, .materials, .upload, #courseScheduleTemp, #courseMarksTemp{
+#tableStudentsSection, #courseDescriptionSection, #gradeStudentsSection, #theme, #editCourseForm, .editTheme, .materials, .upload, #courseScheduleTemp, #courseMarksTemp, #courseStudentsTemp{
 	display: none;
 }
 

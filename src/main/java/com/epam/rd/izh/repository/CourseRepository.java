@@ -2,10 +2,13 @@ package com.epam.rd.izh.repository;
 
 import com.epam.rd.izh.dto.MarkDto;
 import com.epam.rd.izh.dto.ParticipantDto;
+import com.epam.rd.izh.dto.ThemeAttendenceDto;
 import com.epam.rd.izh.entity.*;
 import com.epam.rd.izh.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.security.core.Authentication;
@@ -14,7 +17,11 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -43,6 +50,9 @@ public class CourseRepository {
 
     @Autowired
     MarkDtoMapper markDtoMapper;
+
+    @Autowired
+    ThemeAttendenceDtoMapper themeAttendenceDtoMapper;
 
     public boolean addCourse(@Nullable Course course) {
 
@@ -233,11 +243,23 @@ public class CourseRepository {
     }
 
     public List<ParticipantDto> getCourseParticipants(long idCourse){
-        String queryGetCourseParticipants = "SELECT lastName, firstName, secondName, birthDate FROM admission " +
+        String queryGetCourseParticipants = "SELECT id_student, lastName, firstName, secondName, birthDate FROM admission " +
                                             "LEFT JOIN user ON admission.id_student=user.id " +
                                             "WHERE admission.id_course=?";
 
-        return jdbcTemplate.query(queryGetCourseParticipants, new Object[]{idCourse}, participantDtoMapper);
+        String queryGetParticipantAttendence = "SELECT id_theme, attended FROM attendence LEFT JOIN theme ON attendence.id_theme=theme.id "+
+                                                "WHERE (id_student = ?) and (theme.id_course = ?)";
+
+        List<ParticipantDto> courseParticipantList = jdbcTemplate.query(queryGetCourseParticipants, new Object[]{idCourse}, participantDtoMapper);
+
+        for(ParticipantDto courseParticipant: courseParticipantList){
+            List<ThemeAttendenceDto> themeAttendenceDtoList =
+                    jdbcTemplate.query(queryGetParticipantAttendence, new Object[]{courseParticipant.getIdStudent(), idCourse}, themeAttendenceDtoMapper);
+
+            courseParticipant.setAttendenceList(themeAttendenceDtoList);
+        }
+
+        return courseParticipantList;
     }
 
     public List<MarkDto> getCourseMarks(long idCourse){
@@ -247,6 +269,26 @@ public class CourseRepository {
                 "LEFT JOIN material ON mark.id_lab=material.id "+
                 "WHERE material.id_course=?";
 
-        return jdbcTemplate.query(queryGetCourseMarks, new Object[]{idCourse}, markDtoMapper);
+        List<MarkDto> markDtoList = jdbcTemplate.query(queryGetCourseMarks, new Object[]{idCourse}, markDtoMapper);
+
+        return markDtoList;
     }
+
+    public boolean updateMark(Mark mark)
+    {
+        String queryUpdateMark = "update mark set mark = ? where id = ?";
+
+        return jdbcTemplate.update(
+                queryUpdateMark, mark.getMark(), mark.getId()
+        ) > 0;
+    }
+
+    public boolean updateAttendence(Attendence attendence){
+        String queryUpdateAttendence = "update attendence set attended = ? where (id_student = ?)AND(id_theme=?)";
+
+        return jdbcTemplate.update(
+                queryUpdateAttendence, attendence.isAttended(), attendence.getIdStudent(), attendence.getIdTheme()
+        ) > 0;
+    }
+
 }

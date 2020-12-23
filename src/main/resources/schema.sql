@@ -59,7 +59,7 @@ CREATE TABLE `attendence` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `id_student` INT NOT NULL,
   `id_theme` INT NOT NULL,
-  `attended` TINYINT NOT NULL,
+  `attended` TINYINT NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE);
 
