@@ -17,6 +17,6 @@ a {
 	color: #343a40;
 }
 
-#hiddenCourse{
+#hiddenCourse, #hiddenPossibleCoursesContainer, #possibleHiddenCourse, .possibleCourseId, #hiddenCoursesContainer{
     display: none;
 }

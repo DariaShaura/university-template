@@ -36,4 +36,5 @@ public class RoleService {
     public List<String> getRolesTitles() { return rolesTitles;}
 
     public int getRoleId(String role) { return roleRepository.getRoleId(role); }
+
 }

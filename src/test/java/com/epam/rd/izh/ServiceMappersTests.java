@@ -9,9 +9,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @ComponentScan(basePackages = "com.epam.rd.izh")
@@ -51,5 +59,28 @@ public class ServiceMappersTests {
                                                         .build();
 
         assertEquals(authorizedUserDtoCheck, authorizedUserDto);
+    }
+
+    @Test
+    public void filesCopyTest()
+            throws IOException{
+        String realPathtoUploads = "C:\\Workspace\\final-project-template\\src\\main\\webapp\\uploads\\IIIvan";
+
+        File directory = new File(realPathtoUploads + "\\9\\10");
+        if (! directory.exists()){
+            directory.mkdirs();
+            // If you require it to make the entire directory path including parents,
+            // use directory.mkdirs(); here instead.
+        }
+
+
+        Path copied = Paths.get(realPathtoUploads + "\\9\\10\\lecture04-linclass.pdf");
+        Path originalPath = Paths.get(realPathtoUploads + "\\tempCourse\\lecture04-linclass.pdf");
+        Files.copy(originalPath, copied, StandardCopyOption.REPLACE_EXISTING);
+
+
+        assertTrue(Files.exists(copied));
+        assertTrue(Files.readAllLines(originalPath)
+                .equals(Files.readAllLines(copied)));
     }
 }

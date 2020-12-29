@@ -27,7 +27,7 @@
     <button class="btn btn-lg btn-primary btn-block" type="submit">Войти</button>
   </form>
    <script src="/js/jquery-3.5.1.js"></script>
-      <script src="/bootstrap/js/bootstrap.bundle.min.js"></script>
-       <script src="/js/login.js"></script>
+   <script src="/bootstrap/js/bootstrap.bundle.min.js"></script>
+   <script src="/js/login.js"></script>
 </body>
 </html>

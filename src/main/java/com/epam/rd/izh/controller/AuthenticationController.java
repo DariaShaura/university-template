@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -82,6 +83,19 @@ public class AuthenticationController {
   public String logout(HttpServletRequest request, HttpServletResponse response) {
 
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+    String login = auth.getName();
+
+    String uploadsDir = "\\uploads\\"+login + "\\tempCourse";
+    String realPathtoUploads =  request.getServletContext().getRealPath(uploadsDir);
+
+    File tempDir = new File(realPathtoUploads);
+
+    for (File file : tempDir.listFiles())
+      if (file.isFile()) file.delete();
+
+    tempDir.delete();
+
     if (auth != null){
       new SecurityContextLogoutHandler().logout(request, response, auth);
     }

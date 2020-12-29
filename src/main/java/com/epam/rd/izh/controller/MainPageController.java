@@ -55,6 +55,9 @@ public class MainPageController {
         else if (authorities.contains(new SimpleGrantedAuthority("STUDENT"))){
             return "redirect:/mainStudent";
         }
+        else if (authorities.contains(new SimpleGrantedAuthority("ADMIN"))){
+            return "redirect:/mainAdmin";
+        }
 
          return "redirect:/login";
     }

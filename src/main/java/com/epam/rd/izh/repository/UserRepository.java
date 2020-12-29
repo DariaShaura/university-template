@@ -74,6 +74,13 @@ public class UserRepository {
     return jdbcTemplate.queryForObject(query_getAuthorizedUserByLogin, new Object[]{ login }, Long.class);
   }
 
+  public String getFullUserName(String login){
+    String queryGetFullName = "SELECT concat(user.lastName,' ',user.firstName,' ',user.secondName) FROM user "+
+                              "WHERE user.login = ?";
+
+    return jdbcTemplate.queryForObject(queryGetFullName, new Object[]{login}, String.class);
+  }
+
   public String getLoginById(long id) {
     String query_getLoginById = "SELECT user.login from user where user.id = ?";
 
@@ -103,4 +110,20 @@ public class UserRepository {
       return jdbcTemplate.queryForObject(query_isUserInDB, new Object[]{login}, Integer.class) > 0;
   }
 
+  public List<AuthorizedUser> getAllUsers(){
+    String query_getAuthorizedUsers = "SELECT user.id, user.login, user.password, user.firstName, user.secondName, user.lastName, " +
+            "user.birthDate, role.role FROM user " +
+            "left join role " +
+            "on user.id_role = role.id";
+
+    return jdbcTemplate.query(query_getAuthorizedUsers, authorizedUserMapper);
+  }
+
+  public boolean deleteUser(long idUser){
+    String queryDeleteUser = "DELETE FROM user WHERE user.id=?";
+
+    return jdbcTemplate.update(
+            queryDeleteUser, idUser
+    ) > 0;
+  }
 }

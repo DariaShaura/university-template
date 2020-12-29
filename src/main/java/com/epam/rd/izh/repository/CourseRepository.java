@@ -12,6 +12,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Nullable;
 import java.sql.PreparedStatement;
@@ -59,7 +60,24 @@ public class CourseRepository {
     StudentPossibleCourseDtoMapper studentPossibleCourseDtoMapper;
 
     @Autowired
-    CourseLabDtoMapper courseLabDtoMapper;
+    StudentCourseLabDtoMapper studentCourseLabDtoMapper;
+
+    @Autowired
+    StudentThemeScheduleWithAttendenceMapper studentThemeScheduleWithAttendenceMapper;
+
+    @Transactional
+    public void addCourseThemesMaterials(@Nullable Course course, List<Theme> themeList, List<List<Material>> materialList){
+        addCourse(course);
+
+        themeList.stream().forEach(t -> {t.setId_Course(course.getId()); addTheme(t);});
+
+        for(int i=0; i< themeList.size(); i++){
+            int finalI = i;
+            materialList.get(i).stream().forEach(m -> {m.setIdCourse(course.getId());
+                                                       m.setIdTheme(themeList.get(finalI).getId());
+                                                       addMaterial(m);});
+        }
+    }
 
     public boolean addCourse(@Nullable Course course) {
 
@@ -133,13 +151,30 @@ public class CourseRepository {
 
         if (material != null) {
 
-            String query_insertMaterial = "insert into material (title, type, path, id_theme, id_course) "+"" +
-                    "                 VALUES (?, ?, ?, ?, ?)";
-            return jdbcTemplate.update(
-                    query_insertMaterial,
-                    material.getTitle(), material.getType(), material.getPath(),
-                    material.getIdTheme(), material.getIdCourse()
-            ) > 0;
+            String query_insertMaterial = "insert into material (title, type, path, id_theme, id_course) "+
+                    "VALUES (?, ?, ?, ?, ?)";
+
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+
+            jdbcTemplate.update(connection -> {
+                PreparedStatement ps = connection
+                        .prepareStatement(query_insertMaterial, Statement.RETURN_GENERATED_KEYS);
+                ps.setString(1, material.getTitle());
+                ps.setString(2, material.getType());
+                ps.setString(3, material.getPath());
+                ps.setLong(4, material.getIdTheme());
+                ps.setLong(5, material.getIdCourse());
+                return ps;
+            }, keyHolder);
+
+            long materialId = keyHolder.getKey().longValue();
+
+            if(materialId > 0){
+
+                material.setId(materialId);
+
+                return true;
+            }
         }
         return false;
     }
@@ -281,6 +316,24 @@ public class CourseRepository {
         ) > 0;
     }
 
+    public boolean addLab(Mark mark)
+    {
+        String queryAddLab = "insert into mark (id_student, id_lab, path) VALUES (?, ?, ?)";
+
+        return jdbcTemplate.update(
+                queryAddLab, mark.getIdStudent(), mark.getIdLab(), mark.getPath()
+        ) > 0;
+    }
+
+    public boolean updateLab(Mark mark)
+    {
+        String queryUpdateLabPath = "update mark set path = ? where id = ?";
+
+        return jdbcTemplate.update(
+                queryUpdateLabPath, mark.getPath(), mark.getId()
+        ) > 0;
+    }
+
     public boolean updateAttendence(Attendence attendence){
         String queryUpdateAttendence = "update attendence set attended = ? where (id_student = ?)AND(id_theme=?)";
 
@@ -304,10 +357,66 @@ public class CourseRepository {
         return jdbcTemplate.query(queryGetStudentPossibleCourses, new Object[]{idStudent}, studentPossibleCourseDtoMapper);
     }
 
-    public List<CourseLabDto> getCourseLabList(long idCourse){
-        String getCourseLabsList = "SELECT material.id_course as idCourse, material.id as idLab, material.title as labTitle FROM material " +
-                "WHERE (material.id_course=?)AND(material.type='Лабораторная')";
+    public List<StudentCourseLabDto> getStudentCourseLabList(long idStudent, long idCourse){
+        String getStudentCourseLabsList = "SELECT material.id as idLab, mark.id as idMark, material.title as labTitle, mark.path, mark.mark FROM material " +
+                "LEFT JOIN mark ON material.id=mark.id_lab " +
+                "WHERE (material.id_course=?)AND(material.type='Лабораторная')and((mark.id is null) or (id_student=?))";
 
-        return jdbcTemplate.query(getCourseLabsList, new Object[]{idCourse}, courseLabDtoMapper);
+        return jdbcTemplate.query(getStudentCourseLabsList, new Object[]{idCourse, idStudent}, studentCourseLabDtoMapper);
     }
+
+    public boolean addStudentCourseAdmission(Admission admission){
+        String queryAddAdmission = "INSERT INTO admission (id_student,id_course) VALUES (?,?)";
+
+        String queryAddAttendence = "insert into attendence (id_student, id_theme) " +
+                "select ?, id from theme where id_course=?";
+
+        return (jdbcTemplate.update(
+                queryAddAdmission, admission.getIdStudent(), admission.getIdCourse()
+        ) > 0) && (jdbcTemplate.update(
+                queryAddAttendence, admission.getIdStudent(), admission.getIdCourse()
+        ) > 0);
+    }
+
+    @Transactional
+    public boolean deleteStudentCourseAdmission(Admission admission){
+
+        String queryDeleteAdmission = "delete from admission where (id_student=?)AND(id_course=?)";
+
+        //удалить студента из таблицы Attendence
+        String queryDeleteAttendence = "delete from attendence " +
+                                        "where (id_student=?)and" +
+                                        "(id_theme in (select id from theme where id_course=?)); ";
+        //удалить студента из таблицы Mark
+        String queryDeleteMark = "delete FROM mark "+
+                                    "where (id_student=?)and"+
+                                    "(id_lab in (select id from material where id_course=?))";
+
+        jdbcTemplate.update(
+                queryDeleteAdmission, admission.getIdStudent(), admission.getIdCourse());
+        jdbcTemplate.update(
+                        queryDeleteAttendence, admission.getIdStudent(), admission.getIdCourse());
+        jdbcTemplate.update(
+                        queryDeleteMark, admission.getIdStudent(), admission.getIdCourse());
+        return true;
+    }
+
+    public List<StudentThemeScheduleWithAttendenceDto> getStudentCourseScheduleWithAttendence(long idStudent, long idCourse){
+        String queryGetScheduleWithAttendence = "SELECT theme.title, schedule.start_date, schedule.end_date, attendence.attended FROM theme " +
+                                                "left join schedule on theme.id = schedule.id_theme " +
+                                                "left join attendence on theme.id = attendence.id_theme " +
+                                                "where (theme.id_course=?)and(attendence.id_student=?)";
+
+        return jdbcTemplate.query(queryGetScheduleWithAttendence, new Object[]{idCourse, idStudent}, studentThemeScheduleWithAttendenceMapper);
+    }
+
+    public boolean deleteStudentLab(Mark lab){
+        String queryDeleteStudentLab = "DELETE FROM mark " +
+                                        "where id=?";
+
+        jdbcTemplate.update(queryDeleteStudentLab, lab.getId());
+
+        return true;
+    }
+
 }

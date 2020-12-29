@@ -7,7 +7,7 @@
 	<meta name="author" content="Daria Shaura">
 	<title>Курc:</title>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
-	<link rel="stylesheet" href="/css/course.css">
+	<link rel="stylesheet" href="/css/teacherCourse.css">
   <link rel="icon" href="/images/favicon.ico" type="image/x-icon" />
   <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
   <link href="https://unpkg.com/bootstrap-table@1.18.1/dist/bootstrap-table.min.css" rel="stylesheet">
@@ -15,16 +15,10 @@
 </head>
 <body>
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <i class="fa fa-graduation-cap fa-2x" id="bigCap" aria-hidden="true"></i>
+    <a href="#" id="toMainPage"><i class="fa fa-graduation-cap fa-2x" id="bigCap" aria-hidden="true"></i></a>
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
-        <li class="nav-item active">
-          <a class="nav-link" href="/mainTeacher">Курсы <span class="sr-only">(current)</span></a>
-        </li>
-        <li class="nav-item">
-          <%--<a class="nav-link" href="#">Link</a>--%>
-        </li>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             Курсы
@@ -42,7 +36,7 @@
             ${login}
           </a>
           <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item" href="logout">Выход</a>
+            <a class="dropdown-item" href="/logout">Выход</a>
         </li>
       </ul>
     </div>
@@ -100,19 +94,21 @@
               <h4 class="courseParts">Описание курса</h4>
               <p id="courseDescription">
               </p>
-              <p id="hours">
-                <span class="hours">Количество часов</span>:
+              <p>
+                <span class="hours">Количество часов:</span><span id="hours"></span>
               </p>
               <hr>
               <div id="themesContainer">
-              <div id="theme">
-              <h5 class="themeTitle"></h5>
-              <ol class="list-unstyled themeMaterials">
-              </ol>
-              <hr>
-              </div>
+
               </div>
            </div>
+  </div>
+
+  <div id="themeTemp">
+                <h5 class="themeTitle"></h5>
+                <ol class="list-unstyled themeMaterials">
+                </ol>
+                <hr>
   </div>
 
   <div id="courseScheduleTemp">
@@ -240,30 +236,6 @@
                 </tbody>
             </table>
         </div>
-          <%--<div class="form-row">
-              <div class="form-group col-md-8 ">
-                    <label for="inputTitle">Описание</label>
-                    <input type="text" class="form-control editMaterialTitle">
-              </div>
-              <div class="form-group col-md-4">
-                <label for="editMaterialType">Вид материала</label>
-                <select class="form-control editMaterialType">
-                  <option value="Лекция">Лекция</option>
-                  <option value="Лабораторная">Лабораторная</option>
-                </select>
-              </div>
-          </div>
-          <div class="form-row">
-                <div class="input-group mb-3">
-                  <div class="custom-file">
-                    <input type="file" class="custom-file-input editMaterialPath" aria-describedby="inputGroupFileAddon01">
-                    <label class="custom-file-label">Загрузить другой файл</label>
-                  </div>
-                </div>
-          </div>
-          <div class="form-group row">
-            <button class="btn btn-primary">Удалить материал</button>
-          </div>--%>
 
      </div>
 
@@ -279,7 +251,7 @@
     <!-- jQuery and Bootstrap Bundle (includes Popper) -->
     <script src="/js/jquery-3.5.1.js"></script>
     <script src="/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="/js/course.js"></script>
+    <script src="/js/teacherCourse.js"></script>
     <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script>
     <script src="https://unpkg.com/bootstrap-table@1.18.1/dist/bootstrap-table.min.js"></script>

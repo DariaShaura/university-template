@@ -295,7 +295,7 @@ public class WorkWithDBTests {
                 .idCourse(2)
                 .type("Лабораторная")
                 .title("Вычисление производных")
-                .path("testPath\\testPath")
+                .path("")
                 .build();
 
         assertTrue(courseRepository.updateMaterial(material));
@@ -369,7 +369,7 @@ public class WorkWithDBTests {
     @DisplayName("Тест метода - updateMark()")
     void  updateMarkTest(){
         Mark mark = new Mark().builder()
-                .id(1)
+                .id(2)
                 .idLab(3)
                 .idStudent(4)
                 .path("testPath\\testPath")
@@ -377,6 +377,18 @@ public class WorkWithDBTests {
                 .build();
 
         assertTrue(courseRepository.updateMark(mark));
+    }
+
+    @Test
+    @DisplayName("Тест метода - addLab()")
+    void  addLabTest(){
+        Mark mark = new Mark().builder()
+                .idLab(9)
+                .idStudent(4)
+                .path("testPath\\testPath")
+                .build();
+
+        assertTrue(courseRepository.addLab(mark));
     }
 
     @Test
@@ -435,12 +447,60 @@ public class WorkWithDBTests {
     @Test
     @DisplayName("Тест метода getCourseLabsList()")
     void getCourseLabsListTest(){
-        CourseLabDto courseLabDto = new CourseLabDto().builder()
-                                                .idCourse(2)
-                                                .idLab(6)
-                                                .labTitle("Множества")
+        StudentCourseLabDto courseLabDto = new StudentCourseLabDto().builder()
+                                                .idLab(11)
+                                                .labTitle("test material2")
                                                 .build();
 
-        assertThat(courseRepository.getCourseLabList(2), hasItem(courseLabDto));
+        List<StudentCourseLabDto> studentLabs = courseRepository.getStudentCourseLabList(4,3);
+
+        assertThat(studentLabs, hasItem(courseLabDto));
+    }
+
+    @Test
+    @DisplayName("Тест метода - addStudentCourseAdmission()")
+    void addStudentCourseAdmissionTest(){
+        Admission admission = new Admission().builder().idStudent(4).idCourse(4).build();
+
+        assertTrue(courseRepository.addStudentCourseAdmission(admission));
+        assertTrue(courseRepository.getStudentCourseScheduleWithAttendence(4,4).size()>0);
+    }
+
+    @Test
+    @DisplayName("Тест метода - getFullUserName()")
+    void getFullUserNameTest(){
+        assertEquals("Иванов Иван Иванович", userRepository.getFullUserName("IIIvan"));
+    }
+
+    @Test
+    @DisplayName("Тест метода -getStudentCourseScheduleWithAttendence()")
+    void getStudentCourseScheduleWithAttendence(){
+        StudentThemeScheduleWithAttendenceDto studentThemeScheduleWithAttendenceDto = new StudentThemeScheduleWithAttendenceDto().builder()
+                                                                                                .themeTitle("Теория множеств")
+                                                                                                .attended(false)
+                                                                                                .build();
+
+        List<StudentThemeScheduleWithAttendenceDto> courseStudentScheduleAttendence = courseRepository.getStudentCourseScheduleWithAttendence(4,2);
+
+        assertThat(courseStudentScheduleAttendence, hasItem(studentThemeScheduleWithAttendenceDto));
+    }
+
+    @Test
+    @DisplayName("Тест метода - deleteStudentCourseAdmission()")
+    void deleteStudentCourseAdmissionTest(){
+        Admission admission = new Admission().builder()
+                .idCourse(3)
+                .idStudent(4)
+                .build();
+
+        assertTrue(courseRepository.deleteStudentCourseAdmission(admission));
+        assertTrue(courseRepository.getStudentCourseScheduleWithAttendence(4,3).isEmpty());
+    }
+
+    @Test
+    @DisplayName("Тест метода - deleteUser()")
+    void deleteUserTest(){
+        assertTrue(userRepository.deleteUser(4));
+        assertTrue(courseRepository.getStudentCourseScheduleWithAttendence(4,3).isEmpty());
     }
 }

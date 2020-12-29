@@ -19,4 +19,5 @@ public class CourseDto {
     private String teacherLogin;
     private List<ThemeDto> themes;
     @Builder.Default private NeedAction needAction = NeedAction.NONE;
+    @Builder.Default private String teacherName = "";
 }

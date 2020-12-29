@@ -4,25 +4,17 @@
           doAjaxPost();
         });
 
-        $(document).on('click', 'a.courseHref', function(){
+        $("#toMainPage").click(function(e){
+            event.preventDefault();
+            document.location.href = "/mainTeacher";
+        });
 
-                if($("a.courseHref")){
+        $(document).on('click', 'a.courseHref, a.dropdownCourse', function(){
                     console.log($(this).attr("id"));
                     localStorage.setItem('idCourse',$(this).attr("id"));
                     console.log(localStorage.getItem('idCourse'));
                     document.location.href = "/mainTeacher/course";
-                }
                 });
-
-        $(document).on('click', 'a.dropdownCourse', function(){
-
-                        if($("a.courseHref")){
-                            console.log($(this).attr("id"));
-                            localStorage.setItem('idCourse',$(this).attr("id"));
-                            console.log(localStorage.getItem('idCourse'));
-                            document.location.href = "/mainTeacher/course";
-                        }
-                        });
 });
 
 function doAjaxPost() {

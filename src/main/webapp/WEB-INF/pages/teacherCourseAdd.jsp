@@ -9,14 +9,14 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous"/>
 
-    <link rel="stylesheet" href="/css/courseAdd.css"/>
+    <link rel="stylesheet" href="/css/teacherCourseAdd.css"/>
     <link rel="icon" href="/images/favicon.ico" type="image/x-icon" />
   <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
   <script src="https://use.fontawesome.com/450e77e423.js"></script>
 </head>
 <body>
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <i class="fa fa-graduation-cap fa-2x" aria-hidden="true"></i>
+     <a href="#" id="toMainPage"><i class="fa fa-graduation-cap fa-2x" id="bigCap" aria-hidden="true"></i></a>
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
@@ -25,10 +25,8 @@
             Курсы
           </a>
           <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item" href="#">Курс1</a>
-            <a class="dropdown-item" href="#">Курс2</a>
-            <div class="dropdown-divider"></div>
-            <a class="dropdown-item" href="#">Создать курс</a>
+                      <div class="dropdown-divider" id="afterTeacherCourseList"></div>
+                      <a class="dropdown-item" href="/mainTeacher/courseAdd">Создать курс</a>
           </div>
         </li>
       </ul>
@@ -39,7 +37,7 @@
             ${login}
           </a>
           <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item" href="logout">Выход</a>
+            <a class="dropdown-item" href="/logout">Выход</a>
         </li>
       </ul>
     </div>
@@ -63,6 +61,7 @@
         <div class="form-group">
             <input path="hours" type="number" class="form-control" id="hours" placeholder="Количество часов" required=""/>
         </div>
+        <%--
         <div class="form-group row">
     		<div class="col-auto">
     			<h4>Темы</h4>
@@ -72,56 +71,61 @@
     		</div>
   		</div>
   		<div class="form-group mb-5" id="tableThemes">
+         </div>--%>
+         <div class="form-group row">
+              <div class="col-auto">
+                <h4>Темы</h4>
+              </div>
+
+              <div class="input-group mb-3">
+                     <select class="form-control" id="editThemeList">
+                            <option id="choose">Выберите тему</option>
+                     </select>
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button" id="editCourseAddTheme">Добавить тему</button>
+                    </div>
+              </div>
          </div>
-        <button type="submit" class="btn btn-primary">Добавить курс</button>
+         <div class="form-group mb-5" id="tableThemes">
+         </div>
+        <button type="submit" class="btn btn-primary" id="addCourse">Добавить курс</button>
         </form>
     </div>
   </div>
 
-<%-- MODAL FORM --%>
-<div class="modal fade" id="exampleModal"  data-backdrop="static" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Тема</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <form id="classAddForm">
-        	<div class="form-group">
-            	<label for="themeTitle">Название</label>
-            	<input type="text" class="form-control" id="themeTitle" placeholder="Введите название темы" required="">
-        	</div>
-        	<div class="form-group">
-        	     <h6>Материал к теме</h6>
-        	</div>
-        	<div class="form-group">
-        	    <select class="custom-select" id="selectType">
-                                        <option value="Лекция">Лекция</option>
-                                        <option value="Лабораторная">Лабораторная</option>
-                </select>
-        	</div>
-        	<div class="input-group mb-3">
-  				<div class="custom-file">
-    				<input type="file" class="custom-file-input" id="inputGroupFile01" aria-describedby="inputGroupFileAddon01">
-    				<label class="custom-file-label" for="inputGroupFile01">Выбрать файл</label>
-  				</div>
-			</div>
-			<div class="form-group">
-                 <input type="text" class="form-control" id="description" placeholder="Описание материала">
-            </div>
-    	</form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
-        <button type="button" class="btn btn-primary" id="addClassInCourse">Добавить</button>
+    <div class="editTheme">
+      <div class="input-group mb-3">
+          <input type="text" class="form-control editThemeTitle">
+          <div class="input-group-append">
+            <button class="btn btn-outline-danger buttonDeleteTheme" type="button">Удалить тему</button>
+          </div>
       </div>
     </div>
-  </div>
-</div>
-<!--end modal-->
+
+         <div class="materials">
+            <div class="form-row">
+                <div class="col text-right">
+                    <a href="#" id="editCourseAddMaterial"><i class="fa fa-plus-square-o fa-2x" aria-hidden="true"></i></a>
+                </div>
+            </div>
+            <div class="form-row">
+                <table class="table text-center" id="editMaterialsTable">
+                    <thead>
+                        <tr>
+                            <th class="invisible materialIndex">ID</th>
+                            <th class="text-center">Описание</th>
+                            <th class="text-center">Вид</th>
+                            <th class="text-center">Файл</th>
+                            <th class="text-center">Удалить</th>
+                        </tr>
+                    </thead>
+                    <tbody class="editMaterialsTbody">
+                    </tbody>
+                </table>
+            </div>
+
+         </div>
+
   <footer class="text-muted">
     <div class="container">
         <p class="float-right">
@@ -134,6 +138,6 @@
 
     <script src="/js/jquery-3.5.1.js"></script>
     <script src="/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="/js/courseAdd.js"></script>
+    <script src="/js/teacherCourseAdd.js"></script>
 </body>
 </html>

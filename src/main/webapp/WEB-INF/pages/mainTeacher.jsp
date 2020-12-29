@@ -17,7 +17,7 @@
 </head>
 <body>
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <i class="fa fa-graduation-cap fa-2x" aria-hidden="true"></i>
+    <a href="#" id="toMainPage"><i class="fa fa-graduation-cap fa-2x" aria-hidden="true"></i></a>
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
@@ -27,7 +27,7 @@
           </a>
           <div class="dropdown-menu" aria-labelledby="navbarDropdown">
             <div class="dropdown-divider" id="afterTeacherCourseList"></div>
-            <a class="dropdown-item" href="mainTeacher/courseAdd">Создать курс</a>
+            <a class="dropdown-item" href="/mainTeacher/courseAdd">Создать курс</a>
           </div>
         </li>
       </ul>

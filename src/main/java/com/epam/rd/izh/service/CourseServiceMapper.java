@@ -8,6 +8,7 @@ import org.hibernate.validator.cfg.defs.NegativeDef;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -27,8 +28,17 @@ public class CourseServiceMapper implements CourseService{
     @Autowired
     DateTimeFormatter dateTimeFormatter;
 
+    @Autowired
+    UserFolderService userFolderService;
+
     @Override
-    public Course getCourse(CourseDto courseDto){
+    public Course getCourse(CourseDto courseDto) throws IncorrectDataException {
+
+        if(courseDto.getTitle().equals("") || courseDto.getDescription().equals("") ||
+                (courseDto.getHours() == 0)){
+            throw new IncorrectDataException("Есть незаполненные свойства", courseDto);
+        }
+
 
         Course course = new Course().builder()
                             .id(courseDto.getId())
@@ -58,7 +68,11 @@ public class CourseServiceMapper implements CourseService{
     }
 
     @Override
-    public Theme getTheme(long idCourse, ThemeDto themeDto){
+    public Theme getTheme(long idCourse, ThemeDto themeDto) throws IncorrectDataException {
+
+        if(themeDto.getTitle().equals("")){
+            throw new IncorrectDataException("Есть незаполненные свойства", themeDto);
+        }
 
         Theme theme = new Theme().builder()
                                 .id(themeDto.getId())
@@ -77,6 +91,47 @@ public class CourseServiceMapper implements CourseService{
     @Override
     public boolean addCourse(Course course){
         return courseRepository.addCourse(course);
+    }
+
+    @Override
+    public CourseDto addCourse(CourseDto courseDto)
+                throws IncorrectDataException{
+        Course course = getCourse(courseDto);
+
+        List<Theme> themeList = new ArrayList<>();
+        for (ThemeDto themeDto : courseDto.getThemes()) {
+            Theme theme = getTheme(course.getId(), themeDto);
+            themeList.add(theme);
+        }
+
+        List<List<Material>> themeMaterialList = new ArrayList<>();
+
+        for (ThemeDto p : courseDto.getThemes()) {
+            List<Material> list = new ArrayList<>();
+            for (MaterialDto materialDto : p.getMaterials()) {
+                Material material = getMaterial(course.getId(),0, materialDto);
+                list.add(material);
+            }
+            themeMaterialList.add(list);
+        }
+
+        try{
+            courseRepository.addCourseThemesMaterials(course, themeList, themeMaterialList);
+            courseDto.setId(course.getId());
+
+            for(int i=0; i< themeList.size(); i++){
+                courseDto.getThemes().get(i).setId(themeList.get(i).getId());
+
+                for(int j=0; j<courseDto.getThemes().get(i).getMaterials().size(); j++){
+                    courseDto.getThemes().get(i).getMaterials().get(j).setId(themeMaterialList.get(i).get(j).getId());
+                }
+            }
+        }
+        catch (RuntimeException e){
+            throw new IncorrectDataException("Ошибка добавления курса в БД", null);
+        }
+
+        return courseDto;
     }
 
     @Override
@@ -101,12 +156,17 @@ public class CourseServiceMapper implements CourseService{
     }
 
     @Override
-    public Material getMaterial(long idTheme, MaterialDto materialDto){
+    public Material getMaterial(long idCourse, long idTheme, MaterialDto materialDto) throws IncorrectDataException {
+        if(materialDto.getType().equals("") || materialDto.getPath().equals("")){
+            throw  new IncorrectDataException("Есть незаполненные свойства", materialDto);
+        }
+
         return new Material().builder()
                 .id(materialDto.getId())
                 .title(materialDto.getTitle())
                 .type(materialDto.getType())
                 .path(materialDto.getPath())
+                .idCourse(idCourse)
                 .idTheme(idTheme)
                 .build();
     }
@@ -128,6 +188,18 @@ public class CourseServiceMapper implements CourseService{
                 .title(theme.getTitle())
                 .materials(materialsDto)
                 .build();
+    }
+
+    @Override
+    public CourseDto getCourseDto(long idCourse){
+        Course course = getCourse(idCourse);
+        String teacherLogin = userService.getAuthorizedUserLogin(course.getId_teacher());
+        String teacherName = userService.getFullUserName(teacherLogin);
+
+        CourseDto courseDto = getCourseDto(teacherLogin, course);
+        courseDto.setTeacherName(teacherName);
+
+        return courseDto;
     }
 
     @Override
@@ -163,9 +235,12 @@ public class CourseServiceMapper implements CourseService{
     }
 
     @Override
-    public CourseDto updateCourseThemesMaterials(CourseDto courseDto){
+    public CourseDto updateCourseThemesMaterials(CourseDto courseDto) throws IncorrectDataException, IOException {
 
-            Course course = getCourse(courseDto);
+        Course course = getCourse(courseDto);
+
+        // обновить CourseDto
+        String login = courseDto.getTeacherLogin();
 
         if(courseDto.getNeedAction() == NeedAction.UPDATE) {
             courseRepository.updateCourse(course);
@@ -176,34 +251,38 @@ public class CourseServiceMapper implements CourseService{
 
                 switch (themeDto.getNeedAction()) {
                     case NONE:{
-                        updateMaterials(theme.getId(), themeDto.getMaterials());
+                        updateMaterials(login, theme.getId_Course(), theme.getId(), themeDto.getMaterials());
                         break;
                     }
                     case UPDATE:
                         courseRepository.updateTheme(theme);
-                        updateMaterials(theme.getId(), themeDto.getMaterials());
+                        updateMaterials(login, theme.getId_Course(), theme.getId(), themeDto.getMaterials());
                         break;
                     case ADD:
                         courseRepository.addTheme(theme);
-                        updateMaterials(theme.getId(), themeDto.getMaterials());
+                        updateMaterials(login, theme.getId_Course(), theme.getId(), themeDto.getMaterials());
                         break;
                     case DELETE:
                         courseRepository.deleteTheme(theme.getId());
+
+                            themeDto.getMaterials().stream().forEach(
+                                    materialDto -> {if(materialDto.getId() != -1){
+                                        userFolderService.deleteUserDir(userFolderService.getUserDirFile(login +"\\" +course.getId() + "\\"+ materialDto.getId()));
+                                    };
+                                    }
+                            );
                         break;
                 }
             }
 
-            // обновить CourseDto
-            String login = courseDto.getTeacherLogin();
-
         return getCourseDto(login, course);
     }
 
-    private boolean updateMaterials(long idTheme, List<MaterialDto> materialDtoList){
+    private boolean updateMaterials(String login, long idCourse, long idTheme, List<MaterialDto> materialDtoList) throws IncorrectDataException, IOException {
         boolean result = true;
 
         for(MaterialDto materialDto: materialDtoList){
-            Material material = getMaterial(idTheme, materialDto);
+            Material material = getMaterial(idCourse, idTheme, materialDto);
 
             switch (materialDto.getNeedAction()) {
                 case UPDATE:
@@ -211,25 +290,25 @@ public class CourseServiceMapper implements CourseService{
                     break;
                 case ADD:
                     result = result && courseRepository.addMaterial(material);
-                    //TODO
-                    // обновить поле id в materialDto
+
                     break;
                 case DELETE:
                     result = result && courseRepository.deleteMaterial(material.getId());
-                    // TODO
-                    // удалить materialDto из списка
+
                     break;
             }
         }
         return  result;
     }
 
+    @Override
     public List<ScheduleDto> getCourseScheduleDto(long id){
         List<Schedule> scheduleList = courseRepository.getCourseSchedule(id);
 
         return scheduleList.stream().map(p -> getScheduleDto(p)).collect(Collectors.toList());
     }
 
+    @Override
     public Schedule getSchedule(ScheduleDto scheduleDto)
             throws IncorrectDataException{
 
@@ -253,6 +332,7 @@ public class CourseServiceMapper implements CourseService{
                                 .build();
     }
 
+    @Override
     public ScheduleDto getScheduleDto(Schedule schedule){
 
         String startDate = schedule.getStartDate() != null ? schedule.getStartDate().toString() : "";
@@ -267,6 +347,7 @@ public class CourseServiceMapper implements CourseService{
                 .build();
     }
 
+    @Override
     public boolean updateCourseSchedule(List<ScheduleDto> scheduleDtoList)
                             throws IncorrectDataException {
 
@@ -278,14 +359,17 @@ public class CourseServiceMapper implements CourseService{
         return true;
     }
 
+    @Override
     public List<ParticipantDto> getCourseParticipants(long idCourse){
         return courseRepository.getCourseParticipants(idCourse);
     }
 
+    @Override
     public List<MarkDto> getCourseMarks(long idCourse){
         return courseRepository.getCourseMarks(idCourse);
     }
 
+    @Override
     public boolean updateCourseMarks(List<MarkDto> markDtoList)
                     throws IncorrectDataException{
 
@@ -297,6 +381,7 @@ public class CourseServiceMapper implements CourseService{
         return true;
     }
 
+    @Override
     public Mark getMark(MarkDto markDto)
             throws IncorrectDataException{
         if((markDto.getMark() < 2) || (markDto.getMark() > 5) ){
@@ -312,6 +397,7 @@ public class CourseServiceMapper implements CourseService{
                             .build();
     }
 
+    @Override
     public boolean updateCourseAttendence(List<ParticipantDto> participantDtoList){
 
         for(ParticipantDto participantDto: participantDtoList){
@@ -329,17 +415,100 @@ public class CourseServiceMapper implements CourseService{
         return true;
     }
 
+    @Override
     public List<StudentCourseDto> getStudentsCourseList(String login){
         long idStudent = userService.getAuthorizedUserId(login);
 
         return courseRepository.getStudentCourses(idStudent);
     }
 
-    public List<StudentPossibleCourseDto> getStudentPossibleCourseList(long idStudent){
+    @Override
+    public List<StudentPossibleCourseDto> getStudentPossibleCourseList(String login){
+        long idStudent = userService.getAuthorizedUserId(login);
+
         return courseRepository.getStudentPossibleCourses(idStudent);
     }
 
-    public List<CourseLabDto> getCourseLabList(long idCourse){
-        return  courseRepository.getCourseLabList(idCourse);
+    @Override
+    public List<StudentCourseLabDto> getStudentCourseLabList(String login, long idCourse){
+        long idStudent = userService.getAuthorizedUserId(login);
+
+        return  courseRepository.getStudentCourseLabList(idStudent, idCourse);
+    }
+
+    @Override
+    public boolean addStudentAdmissionOnCourse(String login, long idCourse){
+        long idStudent = userService.getAuthorizedUserId(login);
+
+        Admission admission = new Admission().builder()
+                                            .idStudent(idStudent)
+                                            .idCourse(idCourse)
+                                            .build();
+
+        return courseRepository.addStudentCourseAdmission(admission);
+    }
+
+    @Override
+    public boolean deleteStudentAdmissionOnCourse(String login, long idCourse){
+        long idStudent = userService.getAuthorizedUserId(login);
+
+        Admission admission = new Admission().builder()
+                .idStudent(idStudent)
+                .idCourse(idCourse)
+                .build();
+
+
+
+        return courseRepository.deleteStudentCourseAdmission(admission);
+    }
+
+    @Override
+    public List<StudentThemeScheduleWithAttendenceDto> getStudentCourseScheduleWithAttendence(String login, long idCourse){
+        long idStudent = userService.getAuthorizedUserId(login);
+
+        return courseRepository.getStudentCourseScheduleWithAttendence(idStudent, idCourse);
+    }
+
+    @Override
+    public boolean addLab(Mark mark){
+        return courseRepository.addLab(mark);
+    }
+
+    @Override
+    public boolean updateLab(Mark mark){
+        return courseRepository.updateMark(mark);
+    }
+
+    @Override
+    public Mark getLab(long idStudent, StudentCourseLabDto studentCourseLabDto){
+        return new Mark().builder()
+                .id(studentCourseLabDto.getIdMark())
+                .idStudent(idStudent)
+                .idLab(studentCourseLabDto.getIdLab())
+                .path(studentCourseLabDto.getPath())
+                .build();
+    }
+
+    @Override
+    public boolean updateStudentLab(String login, StudentCourseLabDto studentCourseLabDto){
+        long idStudent = userService.getAuthorizedUserId(login);
+
+        Mark lab = getLab(idStudent, studentCourseLabDto);
+
+        if(lab.getId() == 0){
+            return courseRepository.addLab(lab);
+        }
+        else{
+            return courseRepository.updateLab(lab);
+        }
+    }
+
+    @Override
+    public boolean deleteStudentLab(String login, StudentCourseLabDto studentCourseLabDto){
+        long idStudent = userService.getAuthorizedUserId(login);
+
+        Mark lab = getLab(idStudent, studentCourseLabDto);
+
+        return courseRepository.deleteStudentLab(lab);
     }
 }

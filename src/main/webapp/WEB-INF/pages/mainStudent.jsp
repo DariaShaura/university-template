@@ -17,7 +17,7 @@
 </head>
 <body>
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <i class="fa fa-graduation-cap fa-2x" aria-hidden="true"></i>
+    <a href="#" id="toMainPage"><i class="fa fa-graduation-cap fa-2x" aria-hidden="true"></i></a>
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
@@ -27,7 +27,7 @@
           </a>
           <div class="dropdown-menu" aria-labelledby="navbarDropdown">
             <div class="dropdown-divider" id="afterTeacherCourseList"></div>
-            <a class="dropdown-item" href="mainTeacher/courseAdd">Добавить курс</a>
+            <a class="dropdown-item" href="#" id="linkToAllPossibleCourses">Добавить курс</a>
           </div>
         </li>
       </ul>
@@ -46,39 +46,15 @@
   <div class="jumbotron">
     <div class="container">
       <h1 class="display-3">Курсы</h1>
-      <p><a class="btn btn-primary btn-lg" href="#" role="button">Добавить курс »</a></p>
+      <p><a class="btn btn-primary btn-lg" href="#" role="button" id="loadPossibleCourses">Добавить курс »</a></p>
     </div>
   </div>
  <div class="album py-5 bg-light">
-    <div class="container">
-      <div class="row" id="coursesContainer">
-      <%--
-        <div class="col-md-4">
-          <div class="card mb-4 shadow-sm">
-              <img src="images/image1.jpg">
-            <div class="card-body">
-              <a class="stretched-link" href="mainStudent/course" id="course1">Курс1</a>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="card mb-4 shadow-sm">
-            <img src="images/image2.jpg">
-            <div class="card-body">
-              <a class="stretched-link" href="mainStudent/course" id="course2">Курс2</a>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="card mb-4 shadow-sm">
-            <img src="images/image3.jpg">
-            <div class="card-body">
-              <a class="stretched-link" href="mainStudent/course" id="course3">Курс3</a>
-            </div>
-          </div>
-        </div>--%>
-      </div>
+    <div class="container" id="mainContainer">
+
     </div>
+  </div>
+  <div class="row" id="hiddenCoursesContainer">
   </div>
   <div id="hiddenCourse">
             <div class="col-md-4 courseLink">
@@ -89,6 +65,31 @@
                 </div>
               </div>
             </div>
+  </div>
+  <div class="row row-cols-1 row-cols-md-3 mb-3 text-center" id="hiddenPossibleCoursesContainer">
+  </div>
+  <div id="possibleHiddenCourse">
+    <div class="col possibleCourse">
+                  <div class="card mb-4 shadow-sm">
+                  <div class="card-header">
+                    <p class="possibleCourseId"></p>
+                    <h4 class="my-0 fw-normal possibleCourseTitle"></h4>
+                  </div>
+                  <div class="card-body">
+                    <h2 class="card-title teacherName"></h2>
+                    <ul class="list-unstyled mt-3 mb-4">
+                      <li class="hours">Всего часов: </li>
+                      <li><a class="details" href="#">Подробнее...</a></li>
+                    </ul>
+                    <button type="button" class="w-100 btn btn-lg btn-outline-primary addPossibleCourse">Добавить курс</button>
+                  </div>
+                </div>
+            </div>
+  </div>
+  <div class="dropdown-menu dropdown-menu-sm context-menu">
+            <a class="dropdown-item" href="#" id="loadLab">Сдать лабораторную</a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="#" id="deleteCourse">Удалить курс</a>
   </div>
   <footer class="text-muted">
   <div class="container">

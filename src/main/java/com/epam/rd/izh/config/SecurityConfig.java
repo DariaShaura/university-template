@@ -9,6 +9,8 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -19,6 +21,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Autowired
   private UserDetailsServiceMapper userDetailsService;
+
+
+  @Bean(name = "sessionRegistry")
+  public SessionRegistry sessionRegistry() {
+    return new SessionRegistryImpl();
+  }
 
   /**
    * configure методы определяют настройку Spring Security.
@@ -38,6 +46,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .antMatchers("/registration/**").permitAll()
         .antMatchers("/mainTeacher").hasAuthority("TEACHER")
         .antMatchers("/mainStudent").hasAuthority("STUDENT")
+        .antMatchers("/mainAdmin").hasAuthority("ADMIN")
         /**
          * Открытие доступа к ресурсным пакетам:
          * /webapp/css
@@ -70,7 +79,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .loginPage("/login")
             .defaultSuccessUrl("/main", true)
             .permitAll()
-        .failureUrl("/login?error")
+        .failureUrl("/login?error=error")
         .usernameParameter("login")
         .passwordParameter("password")
 
@@ -79,7 +88,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
          */
         .and()
         .logout()
-        .logoutSuccessUrl("/login");
+        .logoutSuccessUrl("/login")
+        .and()
+        .sessionManagement()
+        .maximumSessions(1)
+        .sessionRegistry(sessionRegistry());
   }
 
   @Override

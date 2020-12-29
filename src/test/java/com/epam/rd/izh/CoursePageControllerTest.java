@@ -1,6 +1,6 @@
 package com.epam.rd.izh;
 
-import com.epam.rd.izh.controller.CoursePageController;
+import com.epam.rd.izh.controller.MainPageTeacherController;
 import com.epam.rd.izh.service.CourseService;
 import com.epam.rd.izh.service.UserDetailsServiceMapper;
 import org.junit.jupiter.api.Test;
@@ -19,7 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 @ExtendWith(SpringExtension.class)
-@WebMvcTest(controllers = CoursePageController.class)
+@WebMvcTest(controllers = MainPageTeacherController.class)
 @ActiveProfiles("test")
 public class CoursePageControllerTest {
     @Autowired
