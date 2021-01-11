@@ -10,6 +10,7 @@ import com.epam.rd.izh.exception.UserAlreadyRegisteredException;
 import com.epam.rd.izh.exception.UsersAgeCorrectnessException;
 import com.epam.rd.izh.repository.RoleRepository;
 import com.epam.rd.izh.service.RoleService;
+import com.epam.rd.izh.service.UserFolderService;
 import com.epam.rd.izh.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -50,6 +51,9 @@ public class AuthenticationController {
   @Autowired
   private RoleService roleService;
 
+  @Autowired
+  UserFolderService userFolderService;
+
 
   /**
    * Метод, отвечающий за логику авторизации пользователя.
@@ -77,29 +81,6 @@ public class AuthenticationController {
      * Spring MVC, используя суффикс и префикс, создаст итоговый путь к JSP: /WEB-INF/pages/login.jsp
      */
     return "login";
-  }
-
-  @GetMapping("/logout")
-  public String logout(HttpServletRequest request, HttpServletResponse response) {
-
-    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-    String login = auth.getName();
-
-    String uploadsDir = "\\uploads\\"+login + "\\tempCourse";
-    String realPathtoUploads =  request.getServletContext().getRealPath(uploadsDir);
-
-    File tempDir = new File(realPathtoUploads);
-
-    for (File file : tempDir.listFiles())
-      if (file.isFile()) file.delete();
-
-    tempDir.delete();
-
-    if (auth != null){
-      new SecurityContextLogoutHandler().logout(request, response, auth);
-    }
-    return "redirect:/login?logout";
   }
 
   /**

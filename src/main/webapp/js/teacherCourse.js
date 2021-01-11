@@ -51,8 +51,8 @@ $(document).ready(function() {
 
   $(document).on('click', '.table-remove', function () {
 
-       var materialIndex = $(this).parents('tr').prevAll().length;//+($(this).parents('td').siblings('.materialIndex').text());
-       themeIndex = $("#editThemeList option:selected").index() - 1;//$("#editThemeList").children(":selected").attr("id");
+       var materialIndex = $(this).parents('tr').prevAll().length;
+       themeIndex = $("#editThemeList option:selected").index() - 1;
 
        if(courseInfo["themes"][themeIndex]["materials"][materialIndex]["id"] != "-1"){
         courseInfo["themes"][themeIndex]["materials"][materialIndex]["needAction"] = "DELETE";
