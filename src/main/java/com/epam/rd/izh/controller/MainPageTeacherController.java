@@ -141,8 +141,6 @@ public class MainPageTeacherController {
 
         courseDto.setTeacherLogin(login);
 
-        //Course course = courseService.getCourse(courseDto);
-
         try {
             courseDto = courseService.addCourse(courseDto);
 
@@ -153,22 +151,14 @@ public class MainPageTeacherController {
                 courseDto.getThemes().stream().forEach(p -> p.getMaterials().stream().forEach(m ->
                 {
                     try {
-                        File directory = new File(realPathtoUploads + "\\" + idCourse + "\\" + m.getId());
-                        if (! directory.exists()){
-                            directory.mkdirs();
-                        }
-                        Files.copy(
-                                Paths.get( realPathtoUploads + "\\tempCourse\\" + m.getPath()),
-                                Paths.get(realPathtoUploads + "\\" + idCourse + "\\" + m.getId() + "\\" + m.getPath()),
-                                StandardCopyOption.REPLACE_EXISTING
-                        );
+                        userFolderService.copyMaterialToUserDir(userFolderService.getUserDir(login + "\\tempCourse"),
+                                userFolderService.getUserDir(login + "\\" + idCourse + "\\" + m.getId()), m.getPath());
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }));
 
-            for (File file : new File(userFolderService.getUserDir(login+"\\tempCourse")).listFiles())
-                if (file.isFile()) file.delete();
+            userFolderService.deleteUserDir(userFolderService.getUserDirFile(login+"\\tempCourse"));
 
             return ResponseEntity.ok(courseDto.getId());
         }
@@ -195,13 +185,8 @@ public class MainPageTeacherController {
 
         long idCourse = Long.parseLong(request.getParameter("idCourse"));
 
-        // получить сущность Курс, Темы, Материалы
-        Course course = courseService.getCourse(idCourse);
+        CourseDto courseDto = courseService.getCourseDto(idCourse);
 
-        // создать класс CourseDTO из сущности Course
-        CourseDto courseDto = courseService.getCourseDto(login, course);
-
-        // отправить класс CourseDTO в ответе на Post-запрос
         return ResponseEntity.ok(courseDto);
     }
 
@@ -213,12 +198,21 @@ public class MainPageTeacherController {
 
         String login = authentication.getName();
 
-        boolean delete = courseService.deleteCourse(idCourse);
+        if(courseService.deleteCourse(idCourse)) {
 
-        userFolderService.deleteUserDir(userFolderService.getUserDirFile(login + "\\" + idCourse));
+            userFolderService.deleteUserDir(userFolderService.getUserDirFile(login + "\\" + idCourse));
 
-        // отправить класс CourseDTO в ответе на Post-запрос
-        return ResponseEntity.ok(delete);
+            // отправить класс CourseDTO в ответе на Post-запрос
+            return new ResponseEntity<>(
+                    false,
+                    HttpStatus.OK);
+        }
+        else{
+            return new ResponseEntity<>(
+                    false,
+                    HttpStatus.BAD_REQUEST);
+        }
+
     }
 
     @PostMapping(value = "/mainTeacher/course/edit", produces = MediaType.APPLICATION_JSON_VALUE)
