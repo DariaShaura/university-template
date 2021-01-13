@@ -3,6 +3,7 @@ package com.epam.rd.izh;
 import com.epam.rd.izh.controller.MainPageController;
 import com.epam.rd.izh.service.CourseService;
 import com.epam.rd.izh.service.UserDetailsServiceMapper;
+import com.epam.rd.izh.service.UserFolderService;
 import com.epam.rd.izh.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,9 +37,12 @@ public class MainPageControllerTest {
     @MockBean
     private UserDetailsServiceMapper userDetailsService;
 
+    @MockBean
+    UserFolderService userFolderService;
+
     @WithMockUser(value = "IIIvan")
     @Test
-    void whenValidInput_thenReturns302() throws Exception {
+    void mainPageTest() throws Exception {
         mockMvc.perform(get("/main"))
                 .andExpect(status().isFound())
                 .andExpect(view().name("redirect:/login"))

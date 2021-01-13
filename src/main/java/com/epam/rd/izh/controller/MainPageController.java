@@ -28,15 +28,6 @@ import java.util.Map;
 @Controller
 public class MainPageController {
 
-
-    @Getter
-    @Setter
-    private class AjaxResponseBody {
-
-        List<Map<String, Object>> result;
-
-    }
-
     @Autowired
     UserService userService;
 
@@ -60,29 +51,5 @@ public class MainPageController {
         }
 
          return "redirect:/login";
-    }
-
-    @GetMapping("/mainTeacher")
-    public String mainTeacher(Authentication authentication, Model model) {
-
-        String login = authentication.getName();
-
-        model.addAttribute("login", login);
-
-        return "mainTeacher";
-    }
-
-    @PostMapping(value = "/mainTeacher", produces = MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody ResponseEntity<?> mainTeacher(Authentication authentication) {
-
-        String login = authentication.getName();
-
-        List<Map<String, Object>> teachersCourses = courseService.getTeachersCourses(login);
-
-        AjaxResponseBody responseBody = new AjaxResponseBody();
-        responseBody.setResult(teachersCourses);
-
-
-        return ResponseEntity.ok(teachersCourses);
     }
 }

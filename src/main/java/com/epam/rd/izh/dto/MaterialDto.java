@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
 @Setter(value = AccessLevel.PUBLIC)
 @Getter
+@EqualsAndHashCode
 public class MaterialDto {
     private long id;
     private String title;

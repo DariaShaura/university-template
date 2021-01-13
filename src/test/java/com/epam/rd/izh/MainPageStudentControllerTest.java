@@ -1,16 +1,25 @@
 package com.epam.rd.izh;
 
 import com.epam.rd.izh.controller.MainPageStudentController;
+import com.epam.rd.izh.dto.AuthorizedUserDto;
+import com.epam.rd.izh.dto.CourseDto;
+import com.epam.rd.izh.dto.NeedAction;
+import com.epam.rd.izh.dto.StudentCourseLabDto;
 import com.epam.rd.izh.service.CourseService;
 import com.epam.rd.izh.service.UserDetailsServiceMapper;
+import com.epam.rd.izh.service.UserFolderService;
 import com.epam.rd.izh.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -19,12 +28,10 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -46,7 +53,19 @@ public class MainPageStudentControllerTest {
     @MockBean
     private UserDetailsServiceMapper userDetailsService;
 
-    @WithMockUser(value = "Romashka")
+    @MockBean
+    UserFolderService userFolderService;
+
+    private JacksonTester<CourseDto> jsonCourseDto;
+
+    private JacksonTester<StudentCourseLabDto> jsonStudentCourseLabDto;
+
+    @BeforeEach
+    public void setUp() throws Exception {
+        JacksonTester.initFields(this, new ObjectMapper());
+    }
+
+    @WithMockUser(authorities = {"STUDENT"})
     @Test
     void mainStudentGetTest() throws Exception {
         mockMvc.perform(get("/mainStudent"))
@@ -56,26 +75,59 @@ public class MainPageStudentControllerTest {
                 .andReturn();
     }
 
-    @WithMockUser(value = "Romashka")
+    @WithMockUser(authorities = {"STUDENT"})
     @Test
-    void mainStudentPostTest() throws Exception {
-        /*List<Map<String, Object>> courses = new ArrayList<>();
-        Map<String, Object> course1 = new HashMap<>();
-        course1.put("id", 1); course1.put("title", "Методы оптимизации");
-        courses.add(course1);
-        Map<String, Object> course2 = new HashMap<>();
-        course2.put("id", 2); course2.put("title", "test Course1");
-        courses.add(course2);
-
-        Mockito.when(courseService.getStudentCourses("Romashka")).thenReturn(courses);
-
-        MvcResult mvcResult = mockMvc.perform(post("/mainStudent"))
+    void mainStudentCourseTest() throws Exception {
+        mockMvc.perform(get("/mainStudent/course"))
                 .andExpect(status().isOk())
+                .andExpect(view().name("studentCourse"))
+                .andDo(MockMvcResultHandlers.print())
                 .andReturn();
+    }
 
-        String actualResponseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+    @WithMockUser(authorities = {"STUDENT"})
+    @Test
+    void mainStudentCoursePostTest() throws Exception {
+        given(courseService.getCourseDto(1))
+                .willReturn(new CourseDto(1, "","",3,"",new ArrayList<>(), NeedAction.NONE, ""));
 
-        assertThat(actualResponseBody).isEqualToIgnoringWhitespace(
-                objectMapper.writeValueAsString(courses));*/
+        MockHttpServletResponse response = mockMvc.perform(post("/mainStudent/course").param("idCourse","1"))
+                .andExpect(status().isOk())
+                .andDo(MockMvcResultHandlers.print())
+                .andReturn().getResponse();
+
+        String strResp = response.getContentAsString();
+        assertThat(strResp).isEqualTo(jsonCourseDto.write(new CourseDto(1, "","",3,"",new ArrayList<>(), NeedAction.NONE, "")).getJson());
+    }
+
+    @WithMockUser(authorities = {"STUDENT"}, value = "Romashka")
+    @Test
+    void getStudentCourseMarksTest() throws Exception {
+        given(courseService.getStudentCourseLabList("Romashka", 1))
+                .willReturn(new ArrayList<>());
+
+        MockHttpServletResponse response = mockMvc.perform(post("/mainStudent/course/marks").param("idCourse","1"))
+                .andExpect(status().isOk())
+                .andDo(MockMvcResultHandlers.print())
+                .andReturn().getResponse();
+
+        assertThat(response.getContentAsString()).isEqualTo("[]");
+    }
+
+    @WithMockUser(authorities = {"STUDENT"}, value = "Romashka")
+    @Test
+    void updateStudentCourseLabTest() throws Exception {
+
+        StudentCourseLabDto studentCourseLabDto = new StudentCourseLabDto(1,-1,"title","path",0);
+
+        given(courseService.updateStudentLab("Romashka", studentCourseLabDto))
+                .willReturn(true);
+
+        MockHttpServletResponse response = mockMvc.perform(post("/mainStudent/course/labs/update").contentType("application/json")
+                .content(objectMapper.writeValueAsBytes(studentCourseLabDto))
+                .characterEncoding("utf-8"))
+                .andExpect(status().isOk())
+                .andDo(MockMvcResultHandlers.print())
+                .andReturn().getResponse();
     }
 }

@@ -44,9 +44,6 @@ public class MainPageStudentController {
     CourseService courseService;
 
     @Autowired
-    private HttpServletRequest request;
-
-    @Autowired
     UserFolderService userFolderService;
 
     @GetMapping("/mainStudent")
@@ -81,7 +78,7 @@ public class MainPageStudentController {
 
     @PostMapping(value="/mainStudent/course",  produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody
-    ResponseEntity<?> studentCourseInfo(Authentication authentication, Model model) {
+    ResponseEntity<?> studentCourseInfo(Authentication authentication, Model model, HttpServletRequest request) {
 
         long idCourse = Long.parseLong(request.getParameter("idCourse"));
 
@@ -104,7 +101,7 @@ public class MainPageStudentController {
     }
 
     @PostMapping(value = "/mainStudent/course/labs/update", produces = MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody ResponseEntity<?> updateStudentCourseLab(Authentication authentication, StudentCourseLabDto studentCourseLabDto) {
+    public @ResponseBody ResponseEntity<?> updateStudentCourseLab(Authentication authentication, @RequestBody StudentCourseLabDto studentCourseLabDto) {
 
         String login = authentication.getName();
 
@@ -121,7 +118,7 @@ public class MainPageStudentController {
     }
 
     @PostMapping(value = "/mainStudent/deleteStudentLab", produces = MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody ResponseEntity<?> deleteStudentLab(Authentication authentication, StudentCourseLabDto studentCourseLabDto,  @RequestParam String idCourse) {
+    public @ResponseBody ResponseEntity<?> deleteStudentLab(Authentication authentication, @RequestBody StudentCourseLabDto studentCourseLabDto,  @RequestParam String idCourse) {
 
         String login = authentication.getName();
 

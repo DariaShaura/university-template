@@ -38,9 +38,10 @@ import java.util.Map;
 @Controller
 public class AuthenticationController {
 
-  @Autowired
-  @Qualifier("userValidator") // spring validator
-  private Validator userValidator;
+  //@Autowired
+  //@Qualifier("userValidator") // spring validator
+  //private Validator userValidator;
+
 
   @Autowired
   private UserService userService;
@@ -54,6 +55,14 @@ public class AuthenticationController {
   @Autowired
   UserFolderService userFolderService;
 
+  @Autowired
+  UserValidator userValidator;
+
+
+  @InitBinder
+  protected void initBinder(WebDataBinder binder) {
+    binder.setValidator(userValidator);
+  }
 
   /**
    * Метод, отвечающий за логику авторизации пользователя.

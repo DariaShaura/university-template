@@ -41,6 +41,14 @@ import java.util.stream.Collectors;
 @Controller
 public class MainPageTeacherController {
 
+    @Getter
+    @Setter
+    private class AjaxResponseBody {
+
+        List<Map<String, Object>> result;
+
+    }
+
     @Autowired
     CourseService courseService;
 
@@ -52,6 +60,29 @@ public class MainPageTeacherController {
 
     @Autowired
     UserFolderService userFolderService;
+
+    @GetMapping("/mainTeacher")
+    public String mainTeacher(Authentication authentication, Model model) {
+
+        String login = authentication.getName();
+
+        model.addAttribute("login", login);
+
+        return "mainTeacher";
+    }
+
+    @PostMapping(value = "/mainTeacher", produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody ResponseEntity<?> mainTeacher(Authentication authentication) {
+
+        String login = authentication.getName();
+
+        List<Map<String, Object>> teachersCourses = courseService.getTeachersCourses(login);
+
+        AjaxResponseBody responseBody = new AjaxResponseBody();
+        responseBody.setResult(teachersCourses);
+
+        return ResponseEntity.ok(teachersCourses);
+    }
 
     @GetMapping("/mainTeacher/courseAdd")
     public String addCourse(Authentication authentication, Model model) {

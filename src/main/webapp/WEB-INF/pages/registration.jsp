@@ -13,7 +13,7 @@
     <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
 </head>
 <body>
-        <form:form modelAttribute="registrationForm" method="POST" action="registration/proceed" class="form-registration row g-3">
+        <form:form modelAttribute="registrationForm" method="POST" action="/registration/proceed" class="form-registration row g-3">
             <div class="col-12 mb-4">
               <nav class="nav nav-pills flex-column flex-sm-row">
                 <a class="flex-sm-fill text-sm-center nav-link" href="login">Вход</a>

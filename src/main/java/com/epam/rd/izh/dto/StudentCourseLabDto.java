@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 @Setter(value = AccessLevel.PUBLIC)
 @Getter
 @EqualsAndHashCode
+@ToString
 public class StudentCourseLabDto {
     private long idLab;
     private long idMark;

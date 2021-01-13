@@ -1,11 +1,10 @@
 package com.epam.rd.izh;
 
+import com.epam.rd.izh.config.WebConfig;
 import com.epam.rd.izh.controller.AuthenticationController;
 import com.epam.rd.izh.dto.AuthorizedUserDto;
-import com.epam.rd.izh.service.RoleService;
-import com.epam.rd.izh.service.UserDetailsServiceMapper;
-import com.epam.rd.izh.service.UserFolderService;
-import com.epam.rd.izh.service.UserService;
+import com.epam.rd.izh.entity.AuthorizedUser;
+import com.epam.rd.izh.service.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,6 +14,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -23,10 +23,16 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
+import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doNothing;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -35,6 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(controllers = AuthenticationController.class)
 @ActiveProfiles("test")
+@Import({UserValidator.class, WebConfig.class})
 public class AuthenticationControllerTest {
     @Autowired
     private MockMvc mockMvc;
@@ -53,10 +60,6 @@ public class AuthenticationControllerTest {
 
     @MockBean
     private UserFolderService userFolderService;
-
-    @MockBean
-    @Qualifier("userValidator")
-    private Validator userValidator;
 
     @MockBean
     private PasswordEncoder passwordEncoder;
@@ -105,16 +108,18 @@ public class AuthenticationControllerTest {
     @Test
     void processRegistrationTest() throws Exception {
 
-        //WebDataBinder binder = new WebDataBinder(jsonAuthorizedUserDto.write(new AuthorizedUserDto("Daria",
-        //        "19871987","Daria","Stanislavovna","Shaura","1987-09-26","STUDENT")).getJson());
-        //BindingResult bindingResult = binder.getBindingResult();
+        AuthorizedUserDto authorizedUserDto = new AuthorizedUserDto("Daria",
+                "19871987","Daria","Stanislavovna","Shaura","1987-09-26","STUDENT");
 
-        String jSon = jsonAuthorizedUserDto.write(new AuthorizedUserDto("Daria",
-                "19871987","Daria","Stanislavovna","Shaura","1987-09-26","STUDENT")).getJson();
+        AuthorizedUser authorizedUser = new AuthorizedUser(1,"Daria","19871987","Daria","Stanislavovna","Shaura",
+                LocalDate.of(1987,9,26), "STUDENT");
 
-        mockMvc.perform(post("/registration/proceed").contentType(MediaType.APPLICATION_JSON)
-                .content(jSon)
-                )
+        given(userService.getAuthorizedUser(authorizedUserDto)).willReturn(authorizedUser);
+
+        given(userService.addAuthorizedUser(authorizedUser)).willReturn(true);
+
+        mockMvc.perform(post("/registration/proceed").
+                flashAttr("registrationForm", authorizedUserDto))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(view().name("redirect:/login"))
                 .andReturn();

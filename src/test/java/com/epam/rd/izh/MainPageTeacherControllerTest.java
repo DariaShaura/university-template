@@ -3,6 +3,8 @@ package com.epam.rd.izh;
 import com.epam.rd.izh.controller.MainPageTeacherController;
 import com.epam.rd.izh.service.CourseService;
 import com.epam.rd.izh.service.UserDetailsServiceMapper;
+import com.epam.rd.izh.service.UserFolderService;
+import com.epam.rd.izh.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(controllers = MainPageTeacherController.class)
 @ActiveProfiles("test")
-public class CoursePageControllerTest {
+public class MainPageTeacherControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
@@ -31,12 +33,18 @@ public class CoursePageControllerTest {
     @MockBean
     private UserDetailsServiceMapper userDetailsService;
 
-    @WithMockUser(value = "IIIvan")
+    @MockBean
+    UserFolderService userFolderService;
+
+    @MockBean
+    UserService userService;
+
+    @WithMockUser(authorities = {"TEACHER"})
     @Test
-    void whenValidInput_thenReturns200() throws Exception {
+    void addCourseTest() throws Exception {
         mockMvc.perform(get("/mainTeacher/courseAdd"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("courseAdd"))
+                .andExpect(view().name("teacherCourseAdd"))
                 .andDo(MockMvcResultHandlers.print())
                 .andReturn();
     }
