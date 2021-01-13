@@ -12,6 +12,7 @@ import java.time.LocalDate;
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
 @Setter(value = AccessLevel.PUBLIC)
 @Getter
+@ToString
 public class ScheduleDto {
     private long id;
     private long idTheme;

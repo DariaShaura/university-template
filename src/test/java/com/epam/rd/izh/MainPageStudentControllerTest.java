@@ -1,10 +1,7 @@
 package com.epam.rd.izh;
 
 import com.epam.rd.izh.controller.MainPageStudentController;
-import com.epam.rd.izh.dto.AuthorizedUserDto;
-import com.epam.rd.izh.dto.CourseDto;
-import com.epam.rd.izh.dto.NeedAction;
-import com.epam.rd.izh.dto.StudentCourseLabDto;
+import com.epam.rd.izh.dto.*;
 import com.epam.rd.izh.service.CourseService;
 import com.epam.rd.izh.service.UserDetailsServiceMapper;
 import com.epam.rd.izh.service.UserFolderService;
@@ -56,15 +53,6 @@ public class MainPageStudentControllerTest {
     @MockBean
     UserFolderService userFolderService;
 
-    private JacksonTester<CourseDto> jsonCourseDto;
-
-    private JacksonTester<StudentCourseLabDto> jsonStudentCourseLabDto;
-
-    @BeforeEach
-    public void setUp() throws Exception {
-        JacksonTester.initFields(this, new ObjectMapper());
-    }
-
     @WithMockUser(authorities = {"STUDENT"})
     @Test
     void mainStudentGetTest() throws Exception {
@@ -97,7 +85,7 @@ public class MainPageStudentControllerTest {
                 .andReturn().getResponse();
 
         String strResp = response.getContentAsString();
-        assertThat(strResp).isEqualTo(jsonCourseDto.write(new CourseDto(1, "","",3,"",new ArrayList<>(), NeedAction.NONE, "")).getJson());
+        assertThat(strResp).isEqualTo(objectMapper.writeValueAsString(new CourseDto(1, "","",3,"",new ArrayList<>(), NeedAction.NONE, "")));
     }
 
     @WithMockUser(authorities = {"STUDENT"}, value = "Romashka")
@@ -124,10 +112,108 @@ public class MainPageStudentControllerTest {
                 .willReturn(true);
 
         MockHttpServletResponse response = mockMvc.perform(post("/mainStudent/course/labs/update").contentType("application/json")
-                .content(objectMapper.writeValueAsBytes(studentCourseLabDto))
+                .content(objectMapper.writeValueAsString(studentCourseLabDto))
                 .characterEncoding("utf-8"))
                 .andExpect(status().isOk())
                 .andDo(MockMvcResultHandlers.print())
                 .andReturn().getResponse();
+    }
+
+    @WithMockUser(authorities = {"STUDENT"}, value = "Romashka")
+    @Test
+    void deleteStudentLabTest() throws Exception {
+        StudentCourseLabDto studentCourseLabDto = new StudentCourseLabDto(1,-1,"title","path",0);
+
+        given(courseService.deleteStudentLab("Romashka", studentCourseLabDto))
+                .willReturn(true);
+
+        mockMvc.perform(post("/mainStudent/deleteStudentLab").contentType("application/json")
+                .content(objectMapper.writeValueAsString(studentCourseLabDto))
+                .characterEncoding("utf-8")
+                .param("idCourse", "1"))
+                .andExpect(status().isOk())
+                .andDo(MockMvcResultHandlers.print())
+                .andReturn();
+    }
+
+    @WithMockUser(authorities = {"STUDENT"}, value = "Romashka")
+    @Test
+    void getStudentCourseScheduleTest() throws Exception {
+
+        given(courseService.getStudentCourseScheduleWithAttendence("Romashka", 1))
+                .willReturn(new ArrayList<>());
+
+        MockHttpServletResponse response = mockMvc.perform(post("/mainStudent/course/schedule")
+                .param("idCourse", "1"))
+                .andExpect(status().isOk())
+                .andDo(MockMvcResultHandlers.print())
+                .andReturn().getResponse();
+
+        assertThat(response.getContentAsString()).isEqualTo("[]");
+    }
+
+    @WithMockUser(authorities = {"STUDENT"}, value = "Romashka")
+    @Test
+    void getPossibleStudentCoursesTest() throws Exception {
+
+        given(courseService.getStudentPossibleCourseList("Romashka"))
+                .willReturn(new ArrayList<>());
+
+        MockHttpServletResponse response = mockMvc.perform(post("/mainStudent/PossibleCourses"))
+                .andExpect(status().isOk())
+                .andDo(MockMvcResultHandlers.print())
+                .andReturn().getResponse();
+
+        assertThat(response.getContentAsString()).isEqualTo("[]");
+    }
+
+    @WithMockUser(authorities = {"STUDENT"}, value = "Romashka")
+    @Test
+    void addStudentCourseTest() throws Exception {
+
+        given(courseService.addStudentAdmissionOnCourse("Romashka", 1))
+                .willReturn(true);
+
+        mockMvc.perform(post("/mainStudent/PossibleCourses/AddCourse")
+                .param("idCourse", "1"))
+                .andExpect(status().isOk())
+                .andDo(MockMvcResultHandlers.print())
+                .andReturn();
+    }
+
+    @WithMockUser(authorities = {"STUDENT"}, value = "Romashka")
+    @Test
+    void possibleStudentCourseInfoTest() throws Exception {
+        mockMvc.perform(get("/mainStudent/PossibleCourses/info"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("studentPossibleCourseInfo"))
+                .andDo(MockMvcResultHandlers.print())
+                .andReturn();
+    }
+
+    @WithMockUser(authorities = {"STUDENT"})
+    @Test
+    void studentPossibleCourseScheduleTest() throws Exception {
+
+        ScheduleDto scheduleDto = new ScheduleDto().builder()
+                                            .id(1)
+                                            .idTheme(1)
+                                            .themeTitle("title")
+                                            .startDate("2021-03-01")
+                                            .endDate("2021-06-03")
+                                            .build();
+
+        List<ScheduleDto> scheduleDtoList = Arrays.asList(scheduleDto);
+
+        given(courseService.getCourseScheduleDto(1))
+                .willReturn(scheduleDtoList);
+
+        MockHttpServletResponse response = mockMvc.perform(post("/mainStudent/PossibleCourses/info/schedule").param("idCourse","1"))
+                .andExpect(status().isOk())
+                .andDo(MockMvcResultHandlers.print())
+                .andReturn().getResponse();
+
+        assertThat(response.getContentAsString()).isEqualTo(
+                objectMapper.writeValueAsString(scheduleDtoList));
     }
 }

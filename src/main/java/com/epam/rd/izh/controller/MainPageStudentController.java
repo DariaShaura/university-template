@@ -190,11 +190,16 @@ public class MainPageStudentController {
         long idCourse = Long.parseLong(request.getParameter("idCourse"));
         String login = authentication.getName();
 
-        boolean result = courseService.addStudentAdmissionOnCourse(login, idCourse);
-
-        return new ResponseEntity<>(
-                true,
-                HttpStatus.OK);
+        if(courseService.addStudentAdmissionOnCourse(login, idCourse)) {
+            return new ResponseEntity<>(
+                    true,
+                    HttpStatus.OK);
+        }
+        else{
+            return new ResponseEntity<>(
+                    true,
+                    HttpStatus.BAD_REQUEST);
+        }
     }
 
     @GetMapping(value = "/mainStudent/PossibleCourses/info")
