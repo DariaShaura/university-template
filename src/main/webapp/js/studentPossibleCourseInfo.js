@@ -7,6 +7,8 @@ $(document).ready(function() {
         loadPossibleCourseInfo(idCourse);
   });
 
+  $('[data-toggle="tooltip"]').tooltip();
+
   $("#toMainPage").click(function(e){
      event.preventDefault();
      document.location.href = "/mainStudent";

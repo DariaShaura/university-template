@@ -8,6 +8,7 @@ import org.hibernate.validator.cfg.defs.NegativeDef;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -235,6 +236,26 @@ public class CourseServiceMapper implements CourseService{
     }
 
     @Override
+    public void updateMaterialFolder(String login, long idCourse, MaterialDto materialDto) throws IOException{
+
+        String materialFolder = userFolderService.getUserDir(login + "\\" + idCourse + "\\" + materialDto.getId());
+
+        switch (materialDto.getNeedAction()){
+            case UPDATE:
+                userFolderService.clearMaterialFolder(materialFolder);
+
+                userFolderService.copyMaterialToUserDir(userFolderService.getUserDir(login+"\\tempCourse"), materialFolder, materialDto.getPath());
+                break;
+            case ADD:
+                userFolderService.copyMaterialToUserDir(userFolderService.getUserDir(login+"\\tempCourse"), materialFolder, materialDto.getPath());
+                break;
+            case DELETE:
+                userFolderService.deleteUserDir(new File(materialFolder));
+                break;
+        }
+    }
+
+    @Override
     public CourseDto updateCourseThemesMaterials(CourseDto courseDto) throws IncorrectDataException, IOException {
 
         Course course = getCourse(courseDto);
@@ -265,12 +286,10 @@ public class CourseServiceMapper implements CourseService{
                     case DELETE:
                         courseRepository.deleteTheme(theme.getId());
 
-                            themeDto.getMaterials().stream().forEach(
-                                    materialDto -> {if(materialDto.getId() != -1){
-                                        userFolderService.deleteUserDir(userFolderService.getUserDirFile(login +"\\" +course.getId() + "\\"+ materialDto.getId()));
-                                    };
-                                    }
-                            );
+                        for(MaterialDto materialDto: themeDto.getMaterials()){
+                            materialDto.setNeedAction(NeedAction.DELETE);
+                            updateMaterialFolder(login, courseDto.getId(), materialDto);
+                        }
                         break;
                 }
             }
@@ -287,14 +306,19 @@ public class CourseServiceMapper implements CourseService{
             switch (materialDto.getNeedAction()) {
                 case UPDATE:
                     result = result && courseRepository.updateMaterial(material);
+
+                    updateMaterialFolder(login, idCourse, materialDto);
                     break;
                 case ADD:
                     result = result && courseRepository.addMaterial(material);
+                    materialDto.setId(material.getId());
 
+                    updateMaterialFolder(login, idCourse, materialDto);
                     break;
                 case DELETE:
                     result = result && courseRepository.deleteMaterial(material.getId());
 
+                    updateMaterialFolder(login, idCourse, materialDto);
                     break;
             }
         }

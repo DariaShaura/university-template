@@ -185,7 +185,12 @@ $(document).ready(function() {
 
 
 function doAjaxPost() {
-    var idCourse = localStorage.getItem('idCourse');
+   var idCourse = localStorage.getItem('idCourse');
+
+   if(typeof idCourse == "undefined"){
+        $("#mainContent").html("Ошибка: курс не загружен");
+        return false;
+   }
 
    $.ajax({
            type: "POST",
@@ -236,11 +241,22 @@ function doAjaxPost() {
                   });
 
                   $("#mainContent").html($("#courseDescriptionSection").html());
+           },
+           complete: function(){
+                if(courseInfo == {}){
+                    $("#mainContent").html('Ошибка: Курс не загружен!');
+
+                }
            }
        });
 }
 
 function showEditForm(){
+
+       if(courseInfo == {}){
+            $("#mainContent").html("Ошибка: курс не загружен");
+            return false;
+       }
 
     $("#editCourseTitle").attr("value",courseInfo["title"])
     $("#editCourseDescription").text(courseInfo["description"]);
@@ -410,6 +426,11 @@ function editCourseSaveMaterialsTable(cell){
 function doAjaxPostToDelete(){
     var idCourse = localStorage.getItem('idCourse');
 
+    if(typeof idCourse == "undefined"){
+                $("#mainContent").html("Ошибка: курс не загружен");
+                return false;
+    }
+
        $.ajax({
                type: "POST",
                url: "/mainTeacher/course/delete",
@@ -424,6 +445,12 @@ function doAjaxPostToDelete(){
 }
 
 function doAjaxPostToEdit(){
+
+    if(courseInfo == {}){
+       $("#mainContent").html("Ошибка: курс не загружен");
+       return false;
+    }
+
     courseInfo["title"] = $("#editCourseTitle").val();
     courseInfo["description"] = $("#editCourseDescription").val();
     courseInfo["hours"] = $("#editCoursehours").val();
@@ -483,6 +510,11 @@ function loadCourseListToNavBar(){
 }
 
 function loadSchedule(){
+
+    if(courseInfo == {}){
+           $("#mainContent").html("Ошибка: курс не загружен");
+           return false;
+    }
 
        var idCourse = courseInfo["id"];
 
@@ -568,6 +600,12 @@ function updateSchedule(){
 }
 
 function loadCourseStudents(){
+
+    if(courseInfo == {}){
+           $("#mainContent").html("Ошибка: курс не загружен");
+           return false;
+    }
+
     var idCourse = courseInfo["id"];
 
            $.ajax({
@@ -618,6 +656,12 @@ function loadCourseStudents(){
 }
 
 function loadCourseMarks(){
+
+    if(courseInfo == {}){
+           $("#mainContent").html("Ошибка: курс не загружен");
+           return false;
+    }
+
     var idCourse = courseInfo["id"];
 
            $.ajax({
@@ -762,7 +806,7 @@ function uploadFileOnServer(materialIndex, fileName,file, span){
 
     $.ajax({
                        type: "POST",
-                       url: "/mainStudent/courseAdd/upload",
+                       url: "/mainTeacher/courseAdd/upload",
                        data: data,
                        enctype: 'multipart/form-data',
                        cache: false,

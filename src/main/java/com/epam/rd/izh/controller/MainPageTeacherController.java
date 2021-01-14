@@ -46,7 +46,6 @@ public class MainPageTeacherController {
     private class AjaxResponseBody {
 
         List<Map<String, Object>> result;
-
     }
 
     @Autowired
@@ -92,7 +91,7 @@ public class MainPageTeacherController {
         return "teacherCourseAdd";
     }
 
-    @PostMapping(value = "/mainStudent/courseAdd/upload")
+    @PostMapping(value = "/mainTeacher/courseAdd/upload")
     public @ResponseBody ResponseEntity<?> courseUploadFile(Authentication authentication,
                                                                @RequestParam("file") MultipartFile file, @RequestParam("idMaterial") String idMaterial,
                                                                @RequestParam("idCourse") String idCourse, @RequestParam("tempFile") boolean tempFile) {
@@ -108,15 +107,11 @@ public class MainPageTeacherController {
                 else {
                     realPathtoUploads = userFolderService.getUserDir(login + "\\" + idCourse + "\\" + idMaterial);
 
-                    //delete file from the realPathtoUploads
-                    for (File oldLab : new File(realPathtoUploads).listFiles())
-                        if (oldLab.isFile()) oldLab.delete();
+                    userFolderService.clearMaterialFolder(realPathtoUploads);
                 }
 
-                String orgName = file.getOriginalFilename();
-                String filePath = realPathtoUploads + "\\" + orgName;
-                File dest = new File(filePath);
-                file.transferTo(dest);
+                userFolderService.saveMultipartFileTo(realPathtoUploads, file);
+
                 return new ResponseEntity<>(
                         true,
                         HttpStatus.OK);
@@ -223,16 +218,6 @@ public class MainPageTeacherController {
 
         try {
             CourseDto updatedCourseDto = courseService.updateCourseThemesMaterials(courseDto);
-
-            userFolderService.deleteUserDir(userFolderService.getUserDirFile(login + "\\" + updatedCourseDto.getId()));
-
-            for(ThemeDto themeDto: updatedCourseDto.getThemes()){
-                for(MaterialDto materialDto: themeDto.getMaterials()){
-                    userFolderService.copyMaterialToUserDir(userFolderService.getUserDir(login +"\\tempCourse"),
-                            userFolderService.getUserDir(login +"\\" +updatedCourseDto.getId() + "\\"+ materialDto.getId()),
-                            materialDto.getPath());
-                }
-            }
 
             return ResponseEntity.ok(updatedCourseDto);
         }

@@ -78,6 +78,13 @@ public class MainPageAdminController {
         long idUser = Long.parseLong(request.getParameter("idUser"));
         String loginUser = request.getParameter("login");
 
+        List<String> activeUsers = activeUserService.getAllActiveUser();
+        if(activeUsers.contains(loginUser)){
+            return new ResponseEntity<>(
+                    "Active",
+                    HttpStatus.BAD_REQUEST);
+        }
+
         if(!userService.deleteUser(idUser)){
             return new ResponseEntity<>(
                     false,

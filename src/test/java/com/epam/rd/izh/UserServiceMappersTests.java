@@ -2,8 +2,11 @@ package com.epam.rd.izh;
 
 import com.epam.rd.izh.dto.AuthorizedUserDto;
 import com.epam.rd.izh.entity.AuthorizedUser;
+import com.epam.rd.izh.exception.UserAlreadyRegisteredException;
+import com.epam.rd.izh.exception.UsersAgeCorrectnessException;
 import com.epam.rd.izh.service.UserServiceMapper;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,12 +21,11 @@ import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ComponentScan(basePackages = "com.epam.rd.izh")
-public class ServiceMappersTests {
+public class UserServiceMappersTests {
 
     @Autowired
     UserServiceMapper userServiceMapper;
@@ -62,25 +64,26 @@ public class ServiceMappersTests {
     }
 
     @Test
-    public void filesCopyTest()
-            throws IOException{
-        String realPathtoUploads = "C:\\Workspace\\final-project-template\\src\\main\\webapp\\uploads\\IIIvan";
+    @DisplayName("Тест метода - isLoginAvailable()")
+    void isLoginAvailableTestShouldThrowException(){
+        String login = "IIIvan";
 
-        File directory = new File(realPathtoUploads + "\\9\\10");
-        if (! directory.exists()){
-            directory.mkdirs();
-            // If you require it to make the entire directory path including parents,
-            // use directory.mkdirs(); here instead.
-        }
+        assertThrows(UserAlreadyRegisteredException.class, ()-> userServiceMapper.isLoginAvailable(login));
+    }
 
+    @Test
+    @DisplayName("Тест метода - isBirthDateCorrect()")
+    void isBirthDateCorrectTestShouldThrowException(){
+        String birthDate = "2021-03-02";
 
-        Path copied = Paths.get(realPathtoUploads + "\\9\\10\\lecture04-linclass.pdf");
-        Path originalPath = Paths.get(realPathtoUploads + "\\tempCourse\\lecture04-linclass.pdf");
-        Files.copy(originalPath, copied, StandardCopyOption.REPLACE_EXISTING);
+        assertThrows(UsersAgeCorrectnessException.class, ()-> userServiceMapper.isBirthDateCorrect(birthDate));
+    }
 
+    @Test
+    @DisplayName("Тест метода - getAllAuthorizedUsers()")
+    void getAllAuthorizedUsersTestShouldThrowException(){
+        String login = "IIIvan";
 
-        assertTrue(Files.exists(copied));
-        assertTrue(Files.readAllLines(originalPath)
-                .equals(Files.readAllLines(copied)));
+        assertThrows(SecurityException.class, ()->userServiceMapper.getAllAuthorizedUsers(login));
     }
 }

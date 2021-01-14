@@ -14,7 +14,7 @@
 </head>
 <body>
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a href="#" id="toMainPage"><i class="fa fa-graduation-cap fa-2x" id="bigCap" aria-hidden="true"></i></a>
+    <a href="#" id="toMainPage" data-toggle='tooltip' title='Главная страница'><i class="fa fa-graduation-cap fa-2x" id="bigCap" aria-hidden="true"></i></a>
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">

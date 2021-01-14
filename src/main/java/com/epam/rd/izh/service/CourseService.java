@@ -43,6 +43,8 @@ public interface CourseService {
 
     boolean deleteCourse(long id);
 
+    void updateMaterialFolder(String login, long idCourse, MaterialDto materialDto) throws IOException;
+
     CourseDto updateCourseThemesMaterials(CourseDto courseDto) throws IncorrectDataException, IOException;
 
     List<ScheduleDto> getCourseScheduleDto(long id);

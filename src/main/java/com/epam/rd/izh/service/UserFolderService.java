@@ -23,10 +23,10 @@ public class UserFolderService {
     private HttpServletRequest request;
 
     public File getUserDirFile(String login){
-        String uploadsDir = "\\uploads\\"+login;
+        String uploadsDir = "\\uploads";
         String realPathtoUploads =  request.getServletContext().getRealPath(uploadsDir);
 
-        return new File(realPathtoUploads);
+        return new File(realPathtoUploads+"\\"+login);
     }
 
     public String getUserDir(String login){
@@ -72,13 +72,14 @@ public class UserFolderService {
     public void clearMaterialFolder(String pathToFolder){
         File userMaterialFolder = new File(pathToFolder);
 
-        for(File file: userMaterialFolder.listFiles()){
-            file.delete();
+        if(userMaterialFolder.exists()) {
+            for (File file : userMaterialFolder.listFiles()) {
+                file.delete();
+            }
         }
     }
 
     public void saveMultipartFileTo(String path, MultipartFile file) throws IOException {
-        clearMaterialFolder(path);
 
         String orgName = file.getOriginalFilename();
         String filePath = path + "\\" + orgName;

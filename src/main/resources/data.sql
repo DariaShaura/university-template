@@ -1,9 +1,13 @@
 INSERT INTO `role` (`role`, `roleTitle`) VALUES ('ADMIN', 'Администратор');
 INSERT INTO `role` (`role`, `roleTitle`) VALUES ('TEACHER', 'Преподаватель');
 INSERT INTO `role` (`role`, `roleTitle`) VALUES ('STUDENT', 'Студент');
+--пароль 19801980
 INSERT INTO `user` (`firstName`, `secondName`, `lastName`, `birthDate`, `id_role`, `login`, `password`) VALUES ('Иван', 'Иванович', 'Иванов', '1980-05-03', '2', 'IIIvan', '$2a$10$63aZbjkgRNhC/Gf12KrrgexiYeTpmMj7ogugtD/NGMRzXN4nWpPCK');
+--пароль 19791979
 INSERT INTO `user` (`firstName`, `secondName`, `lastName`, `birthDate`, `id_role`, `login`, `password`) VALUES ('Петр', 'Петрович', 'Петров', '1979-06-06', '2', 'PPPetrov', '$2a$10$tiAy3DqmFZyv7sfOCw8f2un7hFJveDRzZ36WRfpLSz3sjzvjXCro2');
+--пароль admin
 INSERT INTO `user` (`firstName`, `secondName`, `lastName`, `birthDate`, `id_role`, `login`, `password`) VALUES ('admin', 'admin', 'admin', '1990-01-01', '1', 'admin', '$2a$10$tPJGFZnv4Kfp.m3JmtWSZ.cQAlo0PqEANdppHaqHrRQjy638da5iS');
+--пароль 20002000
 INSERT INTO `user` (`firstName`, `secondName`, `lastName`, `birthDate`, `id_role`, `login`, `password`) VALUES ('Мария', 'Федоровна', 'Ромашкина', '2000-03-07', '3', 'Romashka', '$2a$10$au0dWqtKzJwJ4/GIfpmUlOu2Poq3dHcEqCLWNMDUH0GGOGIOelDSq');
 INSERT INTO `course` (`title`, `description`, `hours`, `id_teacher`) VALUES ('Методы оптимизации', 'Цели данного курса – развить навыки формализации проблемы в виде оптимизационной задачи, освоение методов нахождения наилучших решений, приобрести навыки применения соответствующего программного обеспечения.', '36', '1');
 INSERT INTO `course` (`title`, `description`, `hours`, `id_teacher`) VALUES ('Дискретная математика', 'Цели данного курса – формирование представлений о понятиях и методах в области исследования конечных математических структур и проблемах эффективности и сложности алгоритмов в таких структурах', '44', '1');

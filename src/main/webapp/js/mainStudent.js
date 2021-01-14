@@ -13,6 +13,8 @@ $(document).ready(function(){
           }
         });
 
+    $('[data-toggle="tooltip"]').tooltip();
+
     $("#loadPossibleCourses").click(function(e){
         event.preventDefault();
         $(this).hide();

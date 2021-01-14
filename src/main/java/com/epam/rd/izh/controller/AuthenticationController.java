@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import com.epam.rd.izh.exception.IncorrectDataException;
 import com.epam.rd.izh.exception.UserAlreadyRegisteredException;
 import com.epam.rd.izh.exception.UsersAgeCorrectnessException;
 import com.epam.rd.izh.repository.RoleRepository;
@@ -114,6 +115,11 @@ public class AuthenticationController {
       }
       catch (UserAlreadyRegisteredException ex){
         isAvailable = false;
+      }
+      catch (IncorrectDataException ex){
+        return new ResponseEntity<>(
+                "LoginValue",
+                HttpStatus.BAD_REQUEST);
       }
     }
     else if(request.getParameter("birthDate") != null){

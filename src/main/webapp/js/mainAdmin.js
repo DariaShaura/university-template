@@ -3,6 +3,11 @@ $(document).ready(function(){
     window.addEventListener("load",function() {
           loadUsers();
         });
+    $('[data-toggle="tooltip"]').tooltip();
+
+    $("#updateUsers").click(function(e){
+        loadUsers();
+    });
 });
 
 $(document).on('click', '.table-remove', function () {
@@ -24,6 +29,8 @@ function loadUsers(){
                success: function (data) {
 
                     var tableBody = $("#usersTable").find("tbody");
+
+                    tableBody.empty();
 
                     $.each(data, function(index, user){
                         var row = $("<tr></tr>");
@@ -60,6 +67,12 @@ function deleteUser(idUser, login, row){
                dataType: 'json',
                success: function (data) {
                     row.detach();
+               },
+               error: function(xhr, error, status){
+                    if(xhr.responseText == "Active"){
+                        alert('Пользователь в сети');
+                        loadUsers();
+                    }
                }
        });
 }

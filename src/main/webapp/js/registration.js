@@ -46,10 +46,15 @@ function checkAvailability(type) {
                         $('#birthDate').addClass("is-valid");
                     }
                    },
-                   error: function(data, textStatus){
+                   error: function(xhr, status, error){
                     if(type == "login"){
                         $('#login').addClass("is-invalid");
-                        $('#login-invalid-feedback').text("Пользователь с таким именем уже зарегистрирован");
+                        if(xhr.responseText == "LoginValue"){
+                            $('#login-invalid-feedback').text("Недопустимое значение логина");
+                        }
+                        else{
+                            $('#login-invalid-feedback').text("Пользователь с таким именем уже зарегистрирован");
+                        }
                     }
                     else if(type="birthDate"){
                         $('#birthDate').addClass("is-invalid");

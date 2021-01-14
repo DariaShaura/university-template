@@ -13,6 +13,7 @@ import java.time.LocalDate;
 @Setter(value = AccessLevel.PUBLIC)
 @Getter
 @ToString
+@EqualsAndHashCode
 public class ScheduleDto {
     private long id;
     private long idTheme;

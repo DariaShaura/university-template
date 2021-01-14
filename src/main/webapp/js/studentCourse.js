@@ -140,9 +140,9 @@ function doAjaxPost() {
            data: {"idCourse" : idCourse},
            dataType: 'json',
            success: function (data) {
-           // TODO
-           // проверить, что data не пустой объект!!!
-           courseInfo = data;
+           if(data == {}){
+                $("#mainContent").html('Ошибка: курс не загружен!');
+           }
            // меняем заголовок сайта
            document.title = document.title +' ' + data["title"];
             // отображаем выбранный курс

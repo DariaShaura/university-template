@@ -146,6 +146,7 @@ public class MainPageStudentController {
             try {
                 String login = authentication.getName();
 
+                userFolderService.clearMaterialFolder(userFolderService.getUserDir(login+"\\"+ idCourse + "\\" + idLab));
                 userFolderService.saveMultipartFileTo(userFolderService.getUserDir(login+"\\"+ idCourse + "\\" + idLab), file);
 
                 return new ResponseEntity<>(

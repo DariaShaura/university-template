@@ -284,7 +284,7 @@ function uploadFileOnServer(fileName,file, span){
 
     $.ajax({
                        type: "POST",
-                       url: "/mainStudent/courseAdd/upload",
+                       url: "/mainTeacher/courseAdd/upload",
                        data: data,
                        enctype: 'multipart/form-data',
                        cache: false,
