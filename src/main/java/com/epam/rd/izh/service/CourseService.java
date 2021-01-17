@@ -79,11 +79,7 @@ public interface CourseService {
 
     Mark getLab(long idStudent, StudentCourseLabDto studentCourseLabDto);
 
-    boolean addLab(Mark mark);
+    boolean updateStudentLab(String login, long idCourse, StudentCourseLabDto studentCourseLabDto) throws IOException;
 
-    boolean updateLab(Mark mark);
-
-    boolean updateStudentLab(String login, StudentCourseLabDto studentCourseLabDto);
-
-    boolean deleteStudentLab(String login, StudentCourseLabDto studentCourseLabDto);
+    boolean deleteStudentLab(String login, long idCourse, StudentCourseLabDto studentCourseLabDto);
 }

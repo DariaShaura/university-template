@@ -114,8 +114,9 @@ $(document).on('contextmenu', '.upload_link', function(e) {
           var labPath = $($(this).children()[1]).text();
 
           if(labPath != "Загрузить л/р"){
-            var idLab = $($($(this).parents("tr")[0]).children()[1]).text();
-            var dirToLab = $($($(this).parents("tr")[0]).children()[0]).text() + "//" + labPath;
+            var idCourse = localStorage.getItem("idCourse");
+            var idLab = $($($(this).parents("tr")[0]).children()[0]).text();
+            var dirToLab = idCourse + "//" + idLab + "//" + labPath;
             localStorage.setItem("dirToLab", dirToLab);
             localStorage.setItem("idLab", idLab);
 
@@ -140,7 +141,7 @@ function doAjaxPost() {
            data: {"idCourse" : idCourse},
            dataType: 'json',
            success: function (data) {
-           if(data == {}){
+           if(data == null){
                 $("#mainContent").html('Ошибка: курс не загружен!');
            }
            // меняем заголовок сайта
@@ -178,6 +179,9 @@ function doAjaxPost() {
                                       });
                   });
                   $("#mainContent").html($("#courseDescriptionSection").html());
+           },
+           error: function(xhr, error, status){
+                $("#mainContent").html("Ошибка при загрузке курса!");
            }
        });
 }
@@ -274,11 +278,11 @@ function loadSchedule(){
 function uploadFileOnServer(labWithMarkInfo, file, span){
     if( typeof file == 'undefined' ) return;
 
+    idCourse = localStorage.getItem('idCourse');
+
     // создадим объект данных формы
     var data = new FormData();
     data.append('file',file);
-    data.append('idLab',labWithMarkInfo["idLab"]);
-    data.append('idCourse',localStorage.getItem('idCourse'));
 
     $.ajax({
                        type: "POST",
@@ -291,7 +295,7 @@ function uploadFileOnServer(labWithMarkInfo, file, span){
                        success: function (data) {
                             console.log('Файл загружен');
                             $(span).text(labWithMarkInfo["path"]);
-                            updateLabInfo(labWithMarkInfo);
+                            updateLabInfo(labWithMarkInfo, idCourse);
                         },
                        error: function(data){
                             alert('Ошибка загрузки');
@@ -299,16 +303,20 @@ function uploadFileOnServer(labWithMarkInfo, file, span){
     });
 }
 
-function updateLabInfo(labWithMarkInfo){
+function updateLabInfo(labWithMarkInfo, idCourse){
     $.ajax({
                type: "POST",
-               url: "/mainStudent/course/labs/update",
+               url: "/mainStudent/course/labs/update?idCourse="+idCourse,
                data: labWithMarkInfo,
                dataType: 'json',
                success: function (data) {
                },
-               error: function(data){
+               error: function(xhr, error, status){
+                  if(xhr.responseText == "labNull"){
+                    doAjaxPost();
+                  }
                   alert('Ошибка загрузки файла в базу данных');
+
                }
     });
 }

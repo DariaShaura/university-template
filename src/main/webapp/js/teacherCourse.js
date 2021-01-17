@@ -253,7 +253,7 @@ function doAjaxPost() {
 
 function showEditForm(){
 
-       if(courseInfo == {}){
+      if(courseInfo["id"] == null){
             $("#mainContent").html("Ошибка: курс не загружен");
             return false;
        }
@@ -446,7 +446,7 @@ function doAjaxPostToDelete(){
 
 function doAjaxPostToEdit(){
 
-    if(courseInfo == {}){
+    if(courseInfo["id"] == null){
        $("#mainContent").html("Ошибка: курс не загружен");
        return false;
     }
@@ -511,7 +511,7 @@ function loadCourseListToNavBar(){
 
 function loadSchedule(){
 
-    if(courseInfo == {}){
+    if(courseInfo["id"] == null){
            $("#mainContent").html("Ошибка: курс не загружен");
            return false;
     }
@@ -601,7 +601,7 @@ function updateSchedule(){
 
 function loadCourseStudents(){
 
-    if(courseInfo == {}){
+    if(courseInfo["id"] == null){
            $("#mainContent").html("Ошибка: курс не загружен");
            return false;
     }
@@ -634,9 +634,12 @@ function loadCourseStudents(){
                                        $.each(courseInfo["themes"], function(indexT,theme) {
                                         var inputCheckbox = $("<input></input>").attr("type","checkbox");
                                         if(courseStudents["attendenceList"][indexT]["attendence"] == true){
-                                            inputCheckbox.attr("checked","checked");
+                                            inputCheckbox.prop('checked', true);
                                         }
-                                        $("<td></td>").append(inputCheckbox).appendTo(row);
+                                        else{
+                                            inputCheckbox.prop('checked', false);;
+                                        }
+                                        $("<td></td>").attr("contenteditable","true").append(inputCheckbox).appendTo(row);
                                        });
 
                                        row.appendTo(table.find("tbody"));
@@ -657,7 +660,7 @@ function loadCourseStudents(){
 
 function loadCourseMarks(){
 
-    if(courseInfo == {}){
+    if(courseInfo["id"] == null){
            $("#mainContent").html("Ошибка: курс не загружен");
            return false;
     }
@@ -729,6 +732,7 @@ function updateMarks(){
                    dataType: 'json',
                    success: function (data) {
                         $(".marksTable .is-invalid").each(function(){$(this).removeClass("is-invalid");})
+                        loadCourseMarks();
                         alert('Оценки обновлены');
                     },
                    error: function(data){
@@ -750,7 +754,7 @@ function updateAttendence(){
 
         var attendenceList = [];
         $.each(courseInfo["themes"], function(index,theme) {
-            var attended = ($($(row[5+index]).children()[0]).val() == "on") ? true : false;
+            var attended = ($($(row[5+index]).children()[0])[0].checked == true) ? true : false;
 
             attendenceList.push({
                 "idTheme": theme["id"],
@@ -792,10 +796,10 @@ function uploadFileOnServer(materialIndex, fileName,file, span){
     var idCourse = "";
     var idMaterial = courseInfo["themes"][themeIndex]["materials"][materialIndex]["id"];
 
-    if(idMaterial != "-1"){
-        tempFile = false;
-        idCourse = courseInfo["id"];
-    }
+    //if(idMaterial != "-1"){
+   //     tempFile = false;
+   //     idCourse = courseInfo["id"];
+   // }
 
     // создадим объект данных формы
     var data = new FormData();

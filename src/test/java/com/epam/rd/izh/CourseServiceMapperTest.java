@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
+
 import java.io.File;
 
 import java.io.IOException;
@@ -129,5 +131,16 @@ public class CourseServiceMapperTest {
                 assertTrue(materialFolder.exists() && (materialFolder.listFiles()[0].getName().equals(materialDto.getPath())));
                 break;
         }
+    }
+
+    @Test
+    @DisplayName("Тест метода - updateStudentLab()")
+    void updateStudentLabShouldThrowException(){
+        StudentCourseLabDto studentCourseLabDto = new StudentCourseLabDto().builder()
+                                                                        .idLab(20)
+                                                                        .path("test")
+                                                                        .build();
+
+        assertThrows(DataIntegrityViolationException.class, ()-> courseServiceMapper.updateStudentLab("Romashka",1,studentCourseLabDto));
     }
 }

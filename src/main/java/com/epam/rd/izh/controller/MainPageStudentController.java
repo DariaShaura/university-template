@@ -10,6 +10,8 @@ import jdk.nashorn.internal.ir.debug.JSONWriter;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -83,10 +85,17 @@ public class MainPageStudentController {
         long idCourse = Long.parseLong(request.getParameter("idCourse"));
 
         // создать класс CourseDTO из сущности Course
-        CourseDto courseDto = courseService.getCourseDto(idCourse);
+        try {
+            CourseDto courseDto = courseService.getCourseDto(idCourse);
 
-        // отправить класс CourseDTO в ответе на Post-запрос
-        return ResponseEntity.ok(courseDto);
+            // отправить класс CourseDTO в ответе на Post-запрос
+            return ResponseEntity.ok(courseDto);
+        }
+        catch (EmptyResultDataAccessException e){
+            return new ResponseEntity<>(
+                    false,
+                    HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PostMapping(value = "/mainStudent/course/marks", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -101,31 +110,34 @@ public class MainPageStudentController {
     }
 
     @PostMapping(value = "/mainStudent/course/labs/update", produces = MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody ResponseEntity<?> updateStudentCourseLab(Authentication authentication, @RequestBody StudentCourseLabDto studentCourseLabDto) {
+    public @ResponseBody ResponseEntity<?> updateStudentCourseLab(Authentication authentication, StudentCourseLabDto studentCourseLabDto,  @RequestParam String idCourse) {
 
         String login = authentication.getName();
 
-        if(courseService.updateStudentLab(login, studentCourseLabDto)){
+        try{
+            courseService.updateStudentLab(login, Long.parseLong(idCourse), studentCourseLabDto);
             return new ResponseEntity<>(
                     true,
                     HttpStatus.OK);
         }
-        else{
+        catch (IOException e){
             return new ResponseEntity<>(
                     false,
+                    HttpStatus.BAD_REQUEST);
+        }
+        catch (DataIntegrityViolationException ex){
+            return new ResponseEntity<>(
+                    "labNull",
                     HttpStatus.BAD_REQUEST);
         }
     }
 
     @PostMapping(value = "/mainStudent/deleteStudentLab", produces = MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody ResponseEntity<?> deleteStudentLab(Authentication authentication, @RequestBody StudentCourseLabDto studentCourseLabDto,  @RequestParam String idCourse) {
+    public @ResponseBody ResponseEntity<?> deleteStudentLab(Authentication authentication, StudentCourseLabDto studentCourseLabDto,  @RequestParam String idCourse) {
 
         String login = authentication.getName();
 
-        if(courseService.deleteStudentLab(login, studentCourseLabDto)) {
-            String realPathtoUploads = userFolderService.getUserDir(login + "\\" + idCourse + "\\" + studentCourseLabDto.getIdLab());
-
-            userFolderService.deleteUserDir(new File(realPathtoUploads + "\\" + studentCourseLabDto.getPath()));
+        if(courseService.deleteStudentLab(login, Long.parseLong(idCourse), studentCourseLabDto)) {
 
             return new ResponseEntity<>(
                     true,
@@ -140,14 +152,12 @@ public class MainPageStudentController {
 
     @PostMapping(value = "/mainStudent/course/lab/upload")
     public @ResponseBody ResponseEntity<?> courseLabUploadFile(Authentication authentication,
-                                                               @RequestParam("file") MultipartFile file, @RequestParam("idLab") String idLab,
-                                                               @RequestParam("idCourse") String idCourse) {
+                                                               @RequestParam("file") MultipartFile file) {
         if (!file.isEmpty()) {
             try {
                 String login = authentication.getName();
 
-                userFolderService.clearMaterialFolder(userFolderService.getUserDir(login+"\\"+ idCourse + "\\" + idLab));
-                userFolderService.saveMultipartFileTo(userFolderService.getUserDir(login+"\\"+ idCourse + "\\" + idLab), file);
+                userFolderService.saveMultipartFileTo(userFolderService.getUserDir(login+"\\tempCourse"), file);
 
                 return new ResponseEntity<>(
                         true,
@@ -191,12 +201,14 @@ public class MainPageStudentController {
         long idCourse = Long.parseLong(request.getParameter("idCourse"));
         String login = authentication.getName();
 
-        if(courseService.addStudentAdmissionOnCourse(login, idCourse)) {
+        try{
+            courseService.addStudentAdmissionOnCourse(login, idCourse);
+
             return new ResponseEntity<>(
                     true,
                     HttpStatus.OK);
         }
-        else{
+        catch(DataIntegrityViolationException e){
             return new ResponseEntity<>(
                     true,
                     HttpStatus.BAD_REQUEST);
@@ -218,9 +230,16 @@ public class MainPageStudentController {
 
         long idCourse = Long.parseLong(request.getParameter("idCourse"));
 
-        CourseDto courseDto = courseService.getCourseDto(idCourse);
+        try {
+            CourseDto courseDto = courseService.getCourseDto(idCourse);
 
-        return ResponseEntity.ok(courseDto);
+            return ResponseEntity.ok(courseDto);
+        }
+        catch (EmptyResultDataAccessException e){
+            return new ResponseEntity<>(
+                    true,
+                    HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PostMapping(value = "/mainStudent/PossibleCourses/info/schedule", produces = MediaType.APPLICATION_JSON_VALUE)

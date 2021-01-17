@@ -5,6 +5,8 @@ import com.epam.rd.izh.entity.*;
 import com.epam.rd.izh.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -179,7 +181,7 @@ public class CourseRepository {
         return false;
     }
 
-    public Course getCourseById(long id){
+    public Course getCourseById(long id) throws EmptyResultDataAccessException {
         String query_getCourseByLogin = "SELECT * FROM course WHERE course.id = ?";
 
         Course course = jdbcTemplate.queryForObject(query_getCourseByLogin, new Object[]{ id }, courseMapper);
@@ -316,7 +318,7 @@ public class CourseRepository {
         ) > 0;
     }
 
-    public boolean addLab(Mark mark)
+    public boolean addLab(Mark mark) throws DataIntegrityViolationException
     {
         String queryAddLab = "insert into mark (id_student, id_lab, path) VALUES (?, ?, ?)";
 
@@ -325,7 +327,7 @@ public class CourseRepository {
         ) > 0;
     }
 
-    public boolean updateLab(Mark mark)
+    public boolean updateLab(Mark mark) throws DataIntegrityViolationException
     {
         String queryUpdateLabPath = "update mark set path = ? where id = ?";
 
@@ -351,7 +353,7 @@ public class CourseRepository {
 
     public List<StudentPossibleCourseDto> getStudentPossibleCourses(long idStudent){
         String queryGetStudentPossibleCourses = "SELECT course.id, course.title, concat(lastName, ' ',substring(firstName,1,1), '.',substring(secondName,1,1),'.') as teacher_name," +
-                            "course.hours FROM university_.course left join user ON user.id=course.id_teacher " +
+                            "course.hours FROM course left join user ON user.id=course.id_teacher " +
                             "where course.id not in (select id_course from admission where id_student=?)";
 
         return jdbcTemplate.query(queryGetStudentPossibleCourses, new Object[]{idStudent}, studentPossibleCourseDtoMapper);
@@ -365,7 +367,7 @@ public class CourseRepository {
         return jdbcTemplate.query(getStudentCourseLabsList, new Object[]{idCourse, idStudent}, studentCourseLabDtoMapper);
     }
 
-    public boolean addStudentCourseAdmission(Admission admission){
+    public boolean addStudentCourseAdmission(Admission admission) throws DataIntegrityViolationException{
         String queryAddAdmission = "INSERT INTO admission (id_student,id_course) VALUES (?,?)";
 
         String queryAddAttendence = "insert into attendence (id_student, id_theme) " +

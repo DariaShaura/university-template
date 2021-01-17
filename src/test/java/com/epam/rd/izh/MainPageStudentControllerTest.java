@@ -108,10 +108,10 @@ public class MainPageStudentControllerTest {
 
         StudentCourseLabDto studentCourseLabDto = new StudentCourseLabDto(1,-1,"title","path",0);
 
-        given(courseService.updateStudentLab("Romashka", studentCourseLabDto))
+        given(courseService.updateStudentLab("Romashka",1, studentCourseLabDto))
                 .willReturn(true);
 
-        MockHttpServletResponse response = mockMvc.perform(post("/mainStudent/course/labs/update").contentType("application/json")
+        MockHttpServletResponse response = mockMvc.perform(post("/mainStudent/course/labs/update?idCourse=1").contentType("application/json")
                 .content(objectMapper.writeValueAsString(studentCourseLabDto))
                 .characterEncoding("utf-8"))
                 .andExpect(status().isOk())
@@ -124,14 +124,13 @@ public class MainPageStudentControllerTest {
     void deleteStudentLabTest() throws Exception {
         StudentCourseLabDto studentCourseLabDto = new StudentCourseLabDto(1,-1,"title","path",0);
 
-        given(courseService.deleteStudentLab("Romashka", studentCourseLabDto))
+        given(courseService.deleteStudentLab("Romashka", 1, studentCourseLabDto))
                 .willReturn(true);
 
-        mockMvc.perform(post("/mainStudent/deleteStudentLab").contentType("application/json")
+        mockMvc.perform(post("/mainStudent/deleteStudentLab?idCourse=1").contentType("application/json")
                 .content(objectMapper.writeValueAsString(studentCourseLabDto))
-                .characterEncoding("utf-8")
-                .param("idCourse", "1"))
-                .andExpect(status().isOk())
+                .characterEncoding("utf-8"))
+                .andExpect(status().isBadRequest())
                 .andDo(MockMvcResultHandlers.print())
                 .andReturn();
     }

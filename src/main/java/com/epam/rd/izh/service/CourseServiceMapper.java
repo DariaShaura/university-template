@@ -6,6 +6,8 @@ import com.epam.rd.izh.exception.IncorrectDataException;
 import com.epam.rd.izh.repository.CourseRepository;
 import org.hibernate.validator.cfg.defs.NegativeDef;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -56,7 +58,7 @@ public class CourseServiceMapper implements CourseService{
     }
 
     @Override
-    public Course getCourse(long id){
+    public Course getCourse(long id) throws EmptyResultDataAccessException{
         return courseRepository.getCourseById(id);
     }
 
@@ -192,7 +194,7 @@ public class CourseServiceMapper implements CourseService{
     }
 
     @Override
-    public CourseDto getCourseDto(long idCourse){
+    public CourseDto getCourseDto(long idCourse) throws EmptyResultDataAccessException {
         Course course = getCourse(idCourse);
         String teacherLogin = userService.getAuthorizedUserLogin(course.getId_teacher());
         String teacherName = userService.getFullUserName(teacherLogin);
@@ -286,9 +288,14 @@ public class CourseServiceMapper implements CourseService{
                     case DELETE:
                         courseRepository.deleteTheme(theme.getId());
 
-                        for(MaterialDto materialDto: themeDto.getMaterials()){
-                            materialDto.setNeedAction(NeedAction.DELETE);
-                            updateMaterialFolder(login, courseDto.getId(), materialDto);
+                        try {
+                            for (MaterialDto materialDto : themeDto.getMaterials()) {
+                                materialDto.setNeedAction(NeedAction.DELETE);
+                                updateMaterialFolder(login, courseDto.getId(), materialDto);
+                            }
+                        }
+                        catch(IOException ex){
+                            System.out.println(ex.getMessage());
                         }
                         break;
                 }
@@ -461,7 +468,7 @@ public class CourseServiceMapper implements CourseService{
     }
 
     @Override
-    public boolean addStudentAdmissionOnCourse(String login, long idCourse){
+    public boolean addStudentAdmissionOnCourse(String login, long idCourse) throws DataIntegrityViolationException{
         long idStudent = userService.getAuthorizedUserId(login);
 
         Admission admission = new Admission().builder()
@@ -494,16 +501,6 @@ public class CourseServiceMapper implements CourseService{
     }
 
     @Override
-    public boolean addLab(Mark mark){
-        return courseRepository.addLab(mark);
-    }
-
-    @Override
-    public boolean updateLab(Mark mark){
-        return courseRepository.updateMark(mark);
-    }
-
-    @Override
     public Mark getLab(long idStudent, StudentCourseLabDto studentCourseLabDto){
         return new Mark().builder()
                 .id(studentCourseLabDto.getIdMark())
@@ -514,25 +511,55 @@ public class CourseServiceMapper implements CourseService{
     }
 
     @Override
-    public boolean updateStudentLab(String login, StudentCourseLabDto studentCourseLabDto){
+    public boolean updateStudentLab(String login, long idCourse, StudentCourseLabDto studentCourseLabDto) throws IOException, DataIntegrityViolationException{
         long idStudent = userService.getAuthorizedUserId(login);
 
         Mark lab = getLab(idStudent, studentCourseLabDto);
 
+        MaterialDto courseStudentLab = new MaterialDto().builder()
+                .id(studentCourseLabDto.getIdLab())
+                .path(studentCourseLabDto.getPath())
+                .build();
+
         if(lab.getId() == 0){
-            return courseRepository.addLab(lab);
+            courseRepository.addLab(lab);
+
+            courseStudentLab.setNeedAction(NeedAction.ADD);
         }
         else{
-            return courseRepository.updateLab(lab);
+            courseRepository.updateLab(lab);
+
+            courseStudentLab.setNeedAction(NeedAction.DELETE);
         }
+
+        updateMaterialFolder(login, idCourse, courseStudentLab);
+
+        return true;
     }
 
     @Override
-    public boolean deleteStudentLab(String login, StudentCourseLabDto studentCourseLabDto){
+    public boolean deleteStudentLab(String login, long idCourse, StudentCourseLabDto studentCourseLabDto){
         long idStudent = userService.getAuthorizedUserId(login);
 
         Mark lab = getLab(idStudent, studentCourseLabDto);
 
-        return courseRepository.deleteStudentLab(lab);
+        MaterialDto courseStudentLab = new MaterialDto().builder()
+                .id(studentCourseLabDto.getIdLab())
+                .path(studentCourseLabDto.getPath())
+                .needAction(NeedAction.DELETE)
+                .build();
+
+        boolean isDeleted = courseRepository.deleteStudentLab(lab);
+
+        try{
+            if(isDeleted) {
+                updateMaterialFolder(login, idCourse, courseStudentLab);
+            }
+        }
+        catch (IOException e){
+            System.out.println(e.getMessage());
+        }
+
+        return isDeleted;
     }
 }

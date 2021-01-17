@@ -92,25 +92,12 @@ public class MainPageTeacherController {
     }
 
     @PostMapping(value = "/mainTeacher/courseAdd/upload")
-    public @ResponseBody ResponseEntity<?> courseUploadFile(Authentication authentication,
-                                                               @RequestParam("file") MultipartFile file, @RequestParam("idMaterial") String idMaterial,
-                                                               @RequestParam("idCourse") String idCourse, @RequestParam("tempFile") boolean tempFile) {
+    public @ResponseBody ResponseEntity<?> courseUploadFile(Authentication authentication, @RequestParam("file") MultipartFile file) {
         if (!file.isEmpty()) {
             try {
                 String login = authentication.getName();
 
-                String realPathtoUploads = "";
-
-                if(tempFile){
-                    realPathtoUploads = userFolderService.getUserDir(login+"\\tempCourse");
-                }
-                else {
-                    realPathtoUploads = userFolderService.getUserDir(login + "\\" + idCourse + "\\" + idMaterial);
-
-                    userFolderService.clearMaterialFolder(realPathtoUploads);
-                }
-
-                userFolderService.saveMultipartFileTo(realPathtoUploads, file);
+                userFolderService.saveMultipartFileTo(userFolderService.getUserDir(login+"\\tempCourse"), file);
 
                 return new ResponseEntity<>(
                         true,
@@ -199,7 +186,7 @@ public class MainPageTeacherController {
 
             // отправить класс CourseDTO в ответе на Post-запрос
             return new ResponseEntity<>(
-                    false,
+                    true,
                     HttpStatus.OK);
         }
         else{
@@ -227,33 +214,6 @@ public class MainPageTeacherController {
                     HttpStatus.BAD_REQUEST);
         }
         catch (IOException e) {
-            return new ResponseEntity<>(
-                    false,
-                    HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    @PostMapping(value = "/mainTeacher/course/edit/upload")
-    public @ResponseBody ResponseEntity<?> editCourseUploadFile(Authentication authentication, @RequestParam("file") MultipartFile file) {
-        if (!file.isEmpty()) {
-            try {
-                String login = authentication.getName();
-
-                String realPathtoUploads =  userFolderService.getUserDir(login);
-
-                String orgName = file.getOriginalFilename();
-                String filePath = realPathtoUploads + orgName;
-                File dest = new File(filePath);
-                file.transferTo(dest);
-                return new ResponseEntity<>(
-                        true,
-                        HttpStatus.OK);
-            } catch (Exception e) {
-                return new ResponseEntity<>(
-                        false,
-                        HttpStatus.BAD_REQUEST);
-            }
-        } else {
             return new ResponseEntity<>(
                     false,
                     HttpStatus.BAD_REQUEST);
@@ -320,7 +280,9 @@ public class MainPageTeacherController {
         try{
             courseService.updateCourseMarks(markDtoList);
 
-            return ResponseEntity.ok(markDtoList);
+            return new ResponseEntity<>(
+                    true,
+                    HttpStatus.OK);
         }
         catch (IncorrectDataException e){
             long incorrectMarkId = ((MarkDto)(e.getIncorrectObject())).getId();

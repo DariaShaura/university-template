@@ -17,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator;
 import org.springframework.jdbc.support.SQLErrorCodes;
@@ -197,15 +199,22 @@ public class WorkWithDBTests {
     }
 
     @Test
+    @DisplayName("Тест метода - getCourseById()")
+    void getCourseByIdTestShoudThrowException(){
+
+        assertThrows(EmptyResultDataAccessException.class, ()->courseRepository.getCourseById(40));
+    }
+
+    @Test
     @DisplayName("Тест метода - getCourses()")
     void getCoursesTest(){
 
         assertThat(courseRepository.getCourses(2),
-                Matchers.hasItem(Matchers.<Map<String, Object>>allOf(hasEntry("id", 2),
+                Matchers.hasItem(Matchers.<Map<String, Object>>allOf(hasEntry("id", 3),
                         hasEntry("title", "test Course1"))));
 
         assertThat(courseRepository.getCourses(2),
-                Matchers.hasItem(Matchers.<Map<String, Object>>allOf(hasEntry("id", 3),
+                Matchers.hasItem(Matchers.<Map<String, Object>>allOf(hasEntry("id", 4),
                         hasEntry("title", "test Course2"))));
 
     }
@@ -217,17 +226,18 @@ public class WorkWithDBTests {
         Theme theme1 = new Theme().builder()
                 .id(4)
                 .id_Course(2)
-                .title("test Theme1")
+                .title("Теория множеств")
                 .build();
 
         Theme theme2 = new Theme().builder()
                 .id(5)
                 .id_Course(2)
-                .title("test Theme2")
+                .title("Булевы функции")
                 .build();
 
+        List<Theme> themeList = courseRepository.getThemeList(2);
 
-        assertThat(courseRepository.getThemeList(2), hasItems(theme1, theme2));
+        assertThat(themeList, hasItems(theme1, theme2));
     }
 
     @Test
@@ -235,17 +245,17 @@ public class WorkWithDBTests {
     void getMaterialsListTest(){
         Material material1 = new Material().builder()
                                 .id(4)
-                                .title("test material1")
+                                .title("Операции над множествами")
                                 .type("Лекция")
-                                .path("path1\\\\test")
+                                .path("path4_2")
                                 .idTheme(4)
                                 .idCourse(2)
                                 .build();
         Material material2 = new Material().builder()
                                 .id(5)
-                                .title("test material2")
+                                .title("Декартово произведение")
                                 .type("Лекция")
-                                .path("path2\\\\test")
+                                .path("path4_2")
                                 .idTheme(4)
                                 .idCourse(2)
                                 .build();
@@ -382,8 +392,10 @@ public class WorkWithDBTests {
     @Test
     @DisplayName("Тест метода - addLab()")
     void  addLabTest(){
+       List<Theme> themeList = courseRepository.getThemeList(2);
+
         Mark mark = new Mark().builder()
-                .idLab(9)
+                .idLab(4)
                 .idStudent(4)
                 .path("testPath\\testPath")
                 .build();
@@ -392,19 +404,57 @@ public class WorkWithDBTests {
     }
 
     @Test
+    @DisplayName("Тест метода - addLab()")
+    void  addLabTestShouldThrowException(){
+        Mark mark = new Mark().builder()
+                .idLab(15)
+                .idStudent(4)
+                .path("testPath\\testPath")
+                .build();
+
+        assertThrows(DataIntegrityViolationException.class, ()-> courseRepository.addLab(mark));
+    }
+
+    @Test
+    @DisplayName("Тест метода - updateLab()")
+    void  updateLabTestShouldThrowException(){
+        Mark mark = new Mark().builder()
+                .idLab(15)
+                .idStudent(4)
+                .path("testPath\\testPath")
+                .build();
+
+        assertThrows(DataIntegrityViolationException.class, ()-> courseRepository.addLab(mark));
+    }
+
+    @Test
+    @DisplayName("Тест метода - deleteStudentLab()")
+    void  deleteStudentLabTest(){
+        Mark lab = new Mark().builder()
+                .idLab(150)
+                .idStudent(4)
+                .path("testPath\\testPath")
+                .build();
+
+        assertTrue(courseRepository.deleteStudentLab(lab));
+    }
+
+    @Test
     @DisplayName("Tecт метода getCourseParticipants()")
     void getCourseParticipantsTest(){
+        List<ThemeAttendenceDto> themeAttendenceDtoList = new ArrayList<>();
+        themeAttendenceDtoList.add(new ThemeAttendenceDto(1,true));
+        themeAttendenceDtoList.add(new ThemeAttendenceDto(2,false));
+        themeAttendenceDtoList.add(new ThemeAttendenceDto(3,false));
+
         ParticipantDto participantDto = new ParticipantDto().builder()
                                                             .idStudent(4)
                                                             .lastName("Ромашкина")
                                                             .firstName("Мария")
                                                             .secondName("Федоровна")
                                                             .birthDate("2000-03-07")
+                                                            .attendenceList(themeAttendenceDtoList)
                                                             .build();
-        participantDto.setAttendenceList(Arrays.asList(new ThemeAttendenceDto().builder().idTheme(1).attendence(false).build(),
-                                                        new ThemeAttendenceDto().builder().idTheme(2).attendence(false).build(),
-                                                        new ThemeAttendenceDto().builder().idTheme(3).attendence(false).build()));
-
 
         List<ParticipantDto> participantDtoList = courseRepository.getCourseParticipants(1);
 
@@ -441,7 +491,8 @@ public class WorkWithDBTests {
                 .teacherName("Петров П.П.")
                 .build();
 
-        assertThat(courseRepository.getStudentPossibleCourses(4), hasItem(studentPossibleCourseDto));
+        List<StudentPossibleCourseDto> studentPossibleCourseDtoList = courseRepository.getStudentPossibleCourses(4);
+        assertThat(studentPossibleCourseDtoList, hasItem(studentPossibleCourseDto));
     }
 
     @Test
@@ -478,6 +529,7 @@ public class WorkWithDBTests {
         StudentThemeScheduleWithAttendenceDto studentThemeScheduleWithAttendenceDto = new StudentThemeScheduleWithAttendenceDto().builder()
                                                                                                 .themeTitle("Теория множеств")
                                                                                                 .attended(false)
+                                                                                                .startDate("2021-01-05")
                                                                                                 .build();
 
         List<StudentThemeScheduleWithAttendenceDto> courseStudentScheduleAttendence = courseRepository.getStudentCourseScheduleWithAttendence(4,2);
