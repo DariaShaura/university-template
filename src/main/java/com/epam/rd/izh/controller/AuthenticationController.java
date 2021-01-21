@@ -1,5 +1,6 @@
 package com.epam.rd.izh.controller;
 
+import com.epam.rd.izh.dto.AuthorizedUserDto;
 import com.epam.rd.izh.entity.AuthorizedUser;
 
 import javax.servlet.http.HttpServletRequest;
@@ -13,22 +14,29 @@ import com.epam.rd.izh.repository.RoleRepository;
 import com.epam.rd.izh.service.RoleService;
 import com.epam.rd.izh.service.UserFolderService;
 import com.epam.rd.izh.service.UserService;
+import com.epam.rd.izh.service.UserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.validation.Validator;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
 
 /**
  * В аргументы контроллеров, которые обрабатывают запросы, можно указать дополнительные входные параметры: Например:
@@ -38,11 +46,6 @@ import java.util.Map;
 
 @Controller
 public class AuthenticationController {
-
-  //@Autowired
-  //@Qualifier("userValidator") // spring validator
-  //private Validator userValidator;
-
 
   @Autowired
   private UserService userService;
@@ -98,8 +101,11 @@ public class AuthenticationController {
    */
   @GetMapping("/registration")
   public String viewRegistration(Model model) {
+
+    model.addAttribute("roles", roleService.getRolesTitles());
+
     if(!model.containsAttribute("registrationForm")){
-      model.addAttribute("registrationForm", new AuthorizedUser());
+      model.addAttribute("registrationForm", new AuthorizedUserDto());
     }
     return "registration";
   }
@@ -148,19 +154,11 @@ public class AuthenticationController {
    * Метод, отвечающий за подтверждение регистрации пользователя и сохранение данных в репозиторий или DAO.
    */
   @PostMapping("/registration/proceed")
-  public String processRegistration(@Valid @ModelAttribute("registrationForm") AuthorizedUser registeredUser,
-      BindingResult bindingResult, RedirectAttributes redirectAttributes) {
-
-    /**
-     * Здесь по желанию можно добавить валидацию введенных данных на back-end слое.
-     * Для этого необходимо написать реализацию Validator.
-     */
-    //registeredUser.validate(registeredUserDto, bindingResult);
+  public String processRegistration(@Valid @ModelAttribute("registrationForm") AuthorizedUserDto authorizedUserDto,
+      BindingResult bindingResult) {
 
     if (bindingResult.hasErrors()) {
-      //логика отображения ошибки, не является обязательной
-      //...
-      //...
+
       return "redirect:/registration";
     }
     /**
@@ -170,14 +168,26 @@ public class AuthenticationController {
      * registeredUser может быть DTO объектом, преобразуемым в AuthorizedUser сущность в сервисе-маппере
      * (эот сервис нужно написать самим), вместе с присвоением роли и шифрованием пароля.
      */
-    registeredUser.setRole("User");
-    registeredUser.setPassword(passwordEncoder.encode(registeredUser.getPassword()));
+
+    AuthorizedUser authorizedUser = new AuthorizedUser();
+
+    try {
+      authorizedUser = userService.getAuthorizedUser(authorizedUserDto);
+    }
+    catch (IncorrectDataException ex){
+      return "redirect:/registration";
+    }
 
     /**
      * Добавление пользователя в репозиторий или в базу данных через CRUD операции DAO.
      * Рекомендуется вынести эту логику на сервисный слой.
      */
-    userRepository.addAuthorizedUser(registeredUser);
+    try {
+      userService.addAuthorizedUser(authorizedUser);
+    }
+    catch(UserAlreadyRegisteredException e){
+      return "redirect:/registration";
+    }
     /**
      * В случае успешной регистрации редирект можно настроить на другой энд пойнт.
      */
