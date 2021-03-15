@@ -1,11 +1,23 @@
 package com.epam.rd.izh.repository;
 
 import com.epam.rd.izh.entity.AuthorizedUser;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import com.epam.rd.izh.service.AuthorizedUserMapper;
+import com.epam.rd.izh.service.RoleService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -20,7 +32,17 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class UserRepository {
+
   private final List<AuthorizedUser> users = new ArrayList<>();
+
+  @Autowired
+  JdbcTemplate jdbcTemplate;
+
+  @Autowired
+  AuthorizedUserMapper authorizedUserMapper;
+
+  @Autowired
+  RoleService roleService;
 
   /**
    * В данном методе использована библиотека Stream API:
@@ -34,18 +56,74 @@ public class UserRepository {
    */
 
   @Nullable
-  public AuthorizedUser getAuthorizedUserByLogin(@Nonnull String login) {
-    return users.stream()
-        .filter(value -> value.getLogin().equals(login))
-        .findFirst().orElse(null);
+  public AuthorizedUser getUserByLogin(@Nonnull String login) {
+    String query_getAuthorizedUserByLogin = "SELECT user.id, user.login, user.password, user.firstName, user.secondName, user.lastName, " +
+            "user.birthDate, role.role FROM user " +
+            "left join role " +
+            "on user.id_role = role.id " +
+            "where user.login = ?";
+
+    AuthorizedUser authorizedUser = jdbcTemplate.queryForObject(query_getAuthorizedUserByLogin, new Object[]{ login }, authorizedUserMapper);
+
+    return authorizedUser;
   }
 
-  public boolean addAuthorizedUser(@Nullable AuthorizedUser user) {
+  public long getUserIdByLogin(@Nonnull String login) {
+    String query_getAuthorizedUserByLogin = "SELECT user.id from user where user.login = ?";
+
+    return jdbcTemplate.queryForObject(query_getAuthorizedUserByLogin, new Object[]{ login }, Long.class);
+  }
+
+  public String getFullUserName(String login){
+    String queryGetFullName = "SELECT concat(user.lastName,' ',user.firstName,' ',user.secondName) FROM user "+
+                              "WHERE user.login = ?";
+
+    return jdbcTemplate.queryForObject(queryGetFullName, new Object[]{login}, String.class);
+  }
+
+  public String getLoginById(long id) {
+    String query_getLoginById = "SELECT user.login from user where user.id = ?";
+
+    return jdbcTemplate.queryForObject(query_getLoginById, new Object[]{ id }, String.class);
+  }
+
+  public boolean addUser(@Nullable AuthorizedUser user) {
+
     if (user != null) {
-      users.add(user);
-      return true;
+
+      int roleId = roleService.getRoleId(user.getRole());
+
+      String query_insertUser = "insert into user (firstName, secondName, lastName, birthDate, id_role, login, password) "+"" +
+              "                 VALUES (?, ?, ?, ?, ?, ?, ?)";
+      return jdbcTemplate.update(
+              query_insertUser,
+              user.getFirstName(), user.getSecondName(), user.getLastName(),
+                    user.getBirthDate().toString(), roleId, user.getLogin(), user.getPassword()
+      ) > 0;
     }
     return false;
   }
 
+  public boolean IsUserInDB(String login){
+      String query_isUserInDB = "SELECT count(id) FROM user WHERE login = ?";
+
+      return jdbcTemplate.queryForObject(query_isUserInDB, new Object[]{login}, Integer.class) > 0;
+  }
+
+  public List<AuthorizedUser> getAllUsers(){
+    String query_getAuthorizedUsers = "SELECT user.id, user.login, user.password, user.firstName, user.secondName, user.lastName, " +
+            "user.birthDate, role.role FROM user " +
+            "left join role " +
+            "on user.id_role = role.id";
+
+    return jdbcTemplate.query(query_getAuthorizedUsers, authorizedUserMapper);
+  }
+
+  public boolean deleteUser(long idUser){
+    String queryDeleteUser = "DELETE FROM user WHERE user.id=?";
+
+    return jdbcTemplate.update(
+            queryDeleteUser, idUser
+    ) > 0;
+  }
 }

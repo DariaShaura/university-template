@@ -1,0 +1,66 @@
+table.dataTable thead .sorting:after,
+table.dataTable thead .sorting:before,
+table.dataTable thead .sorting_asc:after,
+table.dataTable thead .sorting_asc:before,
+table.dataTable thead .sorting_asc_disabled:after,
+table.dataTable thead .sorting_asc_disabled:before,
+table.dataTable thead .sorting_desc:after,
+table.dataTable thead .sorting_desc:before,
+table.dataTable thead .sorting_desc_disabled:after,
+table.dataTable thead .sorting_desc_disabled:before {
+bottom: .5em;
+}
+
+body {
+  min-width: 320px;
+  font-size: 16px;
+  font-family: 'Roboto', sans-serif;
+}
+
+a.lectureTitle{
+	color: #007bff;
+}
+
+a {
+	color: #343a40;
+}
+
+#course-themes{
+	font-size: 18px;
+}
+
+#bigCap,#idCircle{
+	color: white;
+}
+
+.courseTitle, .hours, .author, .classHours{
+	font-weight: 600;
+}
+
+.courseParts{
+	color: #007bff;
+}
+
+#themeTemp, #tableStudentsSection, #courseDescriptionSection, #gradeStudentsSection, #theme, #editCourseForm, .editTheme, .materials, .upload, #courseScheduleTemp, #courseMarksTemp, #courseStudentsTemp{
+	display: none;
+}
+
+.editCell{
+	contenteditable:'true';
+}
+
+.editThemeTitle{
+    color: #007bff;
+}
+
+.invisible{
+  display:none;
+}
+
+.is-invalid{
+    color: red;
+}
+
+.disabled{
+    color: grey;
+}
